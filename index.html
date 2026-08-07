@@ -298,7 +298,9 @@ const LOG = {
   "2026-07-31": {done:true, actualMi:4.01, feel:2, body:2, note:"Easy + strides landed on plan (4.01mi vs 4 planned). Avg HR 140.9 (target 148-155) — ran on the conservative side overall, but HR climbed steadily lap to lap (125.5→140.5→146.0→152.7, max 162) while pace also picked up each lap (9:09→8:55→8:36→8:25/mi), with a clear speed spike in the last lap (max speed 5.34 m/s vs ~4.2-4.4 in earlier laps) — consistent with the planned strides at the end, not fatigue-driven fade. Body check tight (general, not heel/IT band) for about the first mile, likely from stacking Thursday's steady session with softball the night before — loosened up as the run went on. Shoes: Vomero Plus Panda, 236.8 mi."},
   "2026-08-01": {done:true, actualMi:11.01, feel:null, body:null, note:"No interactive check-in available this run (automated noon retry) — logged from Strava only. Long run (11.01mi vs 11 planned) nailed the planned structure: 2 mi easy (avg HR 141.9, target 148-158, ran conservative) at ~8:43/mi, 6 mi steady (avg HR 166.7, peak 171, target 163-169, dead on) at ~7:47/mi, 3 mi easy back (avg HR 155.9, peak 170, target 148-155, ran a touch warm but no sustained drift or fade) at ~9:10/mi. No red flags. Shoes: Vomero Plus Black, 242.2 mi."},
   "2026-08-04": {done:true, actualMi:5.01, feel:2, body:1, note:"PNW wildfire smoke had AQI bad enough that he used the gym treadmill instead of his usual garage treadmill for better air quality — gym cardio room was muggy, and pace was watch-estimated (not belt-calibrated), so treat today's pace as rough and not comparable to outdoor (or garage treadmill) runs. Landed on plan (5.01mi vs 5 planned). Avg HR 139.9, max 158 (target 148-155) — HR climbed lap to lap (119→134→144→151→152, topping 158 in the final partial lap) while pace held steady to slightly faster (9:33→9:15/mi per watch) — normal warm-up-driven rise, settled into the 148-155 zone by miles 3-5, not a drift concern. Cadence ~176 spm. Shoes: Vomero Plus Panda, 241.8 mi."},
-  "2026-08-05": {done:true, actualMi:5.01, feel:null, body:null, note:"No interactive check-in available this run (automated) — logged from Strava only. Second straight day on the gym treadmill for wildfire smoke (activity note: 'Damn smoke'). Landed on plan (5.01mi vs 5 planned buffer). Avg HR 139.8, max 158 (target under 155) — comfortably under the buffer cap. Recorded as one continuous lap, so no per-mile splits available today. Shoes: Vomero Plus Panda, 246.8 mi."}
+  "2026-08-05": {done:true, actualMi:5.01, feel:null, body:null, note:"No interactive check-in available this run (automated) — logged from Strava only. Second straight day on the gym treadmill for wildfire smoke (activity note: 'Damn smoke'). Landed on plan (5.01mi vs 5 planned buffer). Avg HR 139.8, max 158 (target under 155) — comfortably under the buffer cap. Recorded as one continuous lap, so no per-mile splits available today. Shoes: Vomero Plus Panda, 246.8 mi."},
+  "2026-08-06": {done:false, actualMi:null, feel:null, body:2, note:"Skipped Thursday's planned steady 6mi (2 easy/3 steady/1 easy) — niggle below the outer right ankle bone plus right hip tight on waking. Air quality still bad, on top of the last two sessions already having to move to the gym treadmill. Playing it safe in base phase; also swapped Friday's planned easy run + strides for rest to arrive fresh for Saturday's 12-mile long run."},
+  "2026-08-07": {done:false, actualMi:null, feel:null, body:null, note:"No interactive check-in available this run (automated) — full rest day, carried over from yesterday's swap (outer ankle niggle + right hip tightness after skipping Thursday's steady session; resting today to arrive fresh for Saturday's 12-mile long run). No run or spin logged."}
 };
 
 // SHOE_SUGGEST holds the recommended shoe for an upcoming (usually not-yet-logged) day, written by the
@@ -314,13 +316,16 @@ const SHOE_SUGGEST = {
   "2026-08-04": "Vomero Plus Panda — 236.8 mi (lowest-mileage of the 3 active Vomero Plus pairs)",
   "2026-08-05": "Vomero Plus Panda — 241.8 mi (lowest-mileage of the 3 active Vomero Plus pairs, confirmed after Tue's 5.01mi run)",
   "2026-08-06": "Evo SL Blue — 21.5 mi (only active Evo SL pair)",
-  "2026-08-07": "Vomero Plus Black — 242.2 mi (lowest-mileage of the 3 active Vomero Plus pairs)",
-  "2026-08-08": "Vomero Plus White — 244.4 mi (currently the lowest of the 3 active Vomero Plus pairs — rotating off Black after Fri's run)",
-  "2026-08-11": "Vomero Plus Panda — 246.8 mi projected (lowest of the 3 again — rotating back after White's long run Sat)",
-  "2026-08-12": "Vomero Plus Black — 247.2 mi projected (lowest of the 3 — rotating off Panda after Tue's easy run)",
-  "2026-08-13": "Vomero Plus Panda — 251.8 mi projected (lowest of the 3 — rotating off Black after Wed's buffer)",
-  "2026-08-14": "Vomero Plus Black — 252.2 mi projected (lowest of the 3 — rotating off Panda after Thu's cutback easy)",
-  "2026-08-15": "Vomero Plus Black — 256.2 mi projected (still lowest of the 3 for the long run — Panda and White are at 256.8/256.4 by this point)"
+  "2026-08-08": "Vomero Plus Black — 242.2 mi (lowest-mileage of the 3 active Vomero Plus pairs)",
+  "2026-08-11": "Vomero Plus White — 244.4 mi (lowest of the 3 active Vomero Plus pairs — rotating off Black after Saturday's 12-mile long run)",
+  "2026-08-12": "Vomero Plus Panda — 246.8 mi (lowest of the 3 — rotating off White after Tuesday's easy run)",
+  "2026-08-13": "Vomero Plus White — 249.4 mi projected (lowest of the 3 — rotating off Panda after Wednesday's buffer run)",
+  "2026-08-14": "Vomero Plus Panda — 251.8 mi projected (lowest of the 3 — rotating off White after Thursday's easy + strides)",
+  "2026-08-15": "Vomero Plus Black — 254.2 mi projected (lowest of the 3 for the long run — Panda and White are at 255.8/254.4 by this point)",
+  "2026-08-18": "Vomero Plus White — 254.4 mi projected (lowest of the 3 — rotating off Black after Saturday's 10-mile long run)",
+  "2026-08-19": "Vomero Plus Panda — 255.8 mi projected (lowest of the 3 — rotating off White after Tuesday's easy run)",
+  "2026-08-20": "Evo SL Blue — 21.5 mi (only active Evo SL pair)",
+  "2026-08-21": "Vomero Plus White — 259.4 mi projected (lowest of the 3 — rotating off Panda after Wednesday's buffer run)"
 };
 
 // SHOES holds every non-retired shoe from Strava gear, refreshed each check-in from that day's live
