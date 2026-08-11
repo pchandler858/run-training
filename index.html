@@ -66,6 +66,13 @@ h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(26px,6vw,44px);li
 .sdetail-li{font-size:13.5px;color:var(--ink);padding-left:16px;position:relative;margin-bottom:5px;line-height:1.45}
 .sdetail-li::before{content:"";position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:var(--fir-soft)}
 .sdetail-li:last-child{margin-bottom:0}
+.note-h{font-family:'JetBrains Mono';font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--gray);margin:12px 0 6px}
+.notetags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.notetag{font-family:'JetBrains Mono';font-size:10.5px;padding:4px 9px;border-radius:7px;display:inline-flex;align-items:center;gap:5px;line-height:1.3;background:var(--fir-tint);color:var(--fir)}
+.notetag.shoe{background:#ece9de;color:#5c5747}
+.notetag.game{background:var(--gold-tint);color:#8a6006}
+.notetag.auto{background:var(--line);color:var(--gray)}
+.notelines .sdetail-li::before{background:var(--gray);opacity:.55}
 .subsection{border:1px solid var(--line);border-radius:10px;margin-top:12px;overflow:hidden}
 .subhead{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;font-family:'JetBrains Mono';font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--fir);font-weight:600;background:var(--paper)}
 .subhead:hover{background:var(--card)}
@@ -247,6 +254,25 @@ const BODY=["","Fresh","Tight","Sore"];
 const MONTHS=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const DOWS=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
+// Pulls the recurring "topic" clauses (shoes worn, PF routine, evening game, automated-pull
+// caveat) out of a free-text log note as small labeled tags, then splits whatever prose is left
+// into one line per sentence — so a long note reads as a scannable list instead of one paragraph.
+function parseNote(noteRaw){
+  if(!noteRaw) return{tags:[],lines:[]};
+  let text=noteRaw;
+  const tags=[];
+  const pull=(re,cls,icon)=>{
+    text=text.replace(re,m=>{tags.push({cls,icon,text:m.trim().replace(/\.$/,"")});return" ";});
+  };
+  pull(/No interactive check-in available this run[^.]*\.\s*/i,"auto","⚙");
+  pull(/Shoes:\s*[^.]*\.\s*/i,"shoe","👟");
+  pull(/PF routine:\s*[^.]*\.\s*/i,"pf","🦶");
+  pull(/[A-Z][a-zA-Z']*\s+tonight\s*\([^)]*\)[^.]*\.\s*/,"game","🥎");
+  text=text.replace(/\s{2,}/g," ").trim();
+  const lines=text?text.split(/(?<=[.!?])\s+(?=[A-Z0-9])/).map(s=>s.trim()).filter(Boolean):[];
+  return{tags,lines};
+}
+
 const raw={
   base:[
     ["2026-07-13","10","",28,"Steady 6 mi · 2 easy / 3 steady / 1 easy"],
@@ -364,6 +390,16 @@ const STRENGTH={
   push:["Incline DB press 3x10","Flat DB bench 3x10","Standing DB shoulder press 3x10","Cable lateral raise 3x12","Tricep rope pushdown 3x12"],
   pull:["Chest supported row 3x10","Lat pulldown 3x10","Seated cable row 3x10","Hammer curl 3x12","Side plank 3x30 sec each","Dead bug 3x10 each"]
 };
+// Standing plantar fasciitis protocol (started Aug 10 2026) — shown on every day, not just Thursday's
+// strength list, since the morning stretch and 5-min routine are daily habits, not a workout.
+const PF_DAILY=[
+  "Morning, before the first step out of bed: point/flex the foot 10x, then towel-pull stretch into dorsiflexion, 30 sec x 3. Symptoms flare after rest, so stretching before loading the foot reduces first-step discomfort.",
+  "~5 min: frozen water bottle roll under the arch (2-3 min/foot), calf stretch both variants — straight-knee and bent-knee (30 sec x 2 each, both legs), big toe extension stretch (30 sec x 2).",
+  "Off-run: supportive shoes at all times, no barefoot walking on hard floors at home.",
+  "3x/week (one session is folded into Thursday's lower body strength below): eccentric heel drops off a step (3x12-15, slow 3-4 count lower), short-foot/toe doming (10-15 reps/foot), towel scrunches or toe marble pickups (1-2 min/foot).",
+  "2x/week, any two days: lacrosse or golf ball self-massage under the arch, 2 min/foot."
+];
+const PF_LONGRUN="Long run 8mi+: consider taping the arch or a supportive insole, ice the arch 10 min after.";
 // Long runs are primarily an aerobic-endurance/durability stimulus, not a second quality workout —
 // Thursday's key session already owns the week's dedicated hard effort. The steady middle here is
 // capped by phase (rather than soaking up whatever mileage is left over) so long runs stay
@@ -463,6 +499,7 @@ function genDays(w){
       {off:5,t:"easy",s:"2mi Shakeout + Strides",mi:2,sm:"HR 148-155 + 4 strides",str:"",det:["2 miles very easy plus 4 short strides.","Loosen the legs for tomorrow. Nothing more."]},
       {off:6,t:"race",s:raceName,mi:0,sm:"Race day",str:"",det:isHalf?["Run to Stay Warm Half, 13.1 miles, flat river path, 9:00 am start.","Goal 1:33 to 1:36. Settle the first 2 miles, then lock into rhythm.","Race in the Adios Pro 4. Fuel and hydrate to plan."]:["Eugene Marathon, 26.2 miles, 7:00 am start, finishes on Hayward Field.","Goal 3:30 to 3:40. Bank nothing early, run your pace, fuel every 30 to 40 min.","Race in the Adios Pro 4. This is the one the whole season points at."]}
     ];
+    arr.forEach(o=>{o.pfDet=PF_DAILY;});
     return arr.map(x=>({...x,...addDays(w.iso,x.off)}));
   }
   const L=parseFloat(w.lr)||0;
@@ -510,6 +547,8 @@ function genDays(w){
     {off:5,t:"long",s:`${L}mi Long Run${isCutbackLong?" (cutback)":(longSp.racePace>0?` — ${longSp.racePace}mi @ ${w.phase==="half"?"HMP":"MP"}`:"")}`,mi:L,sm:longStruct,str:"",det:longDetail(L,w.phase,w.racePaceMi,isCutbackLong)},
     {off:6,t:"rest",s:"Recovery Day",mi:0,sm:"Walk, mobility, or easy spin",str:"",det:["Recovery day.","Walk, mobility, or family activity. Optional 20-25 min easy spin.","Do not turn this into a session. Rest is part of the plan."]}
   ];
+  arr.forEach(o=>{o.pfDet=PF_DAILY;});
+  if(L>=8)arr[5].pfDet=[...PF_DAILY,PF_LONGRUN];
   return arr.map(x=>({...x,...addDays(w.iso,x.off)}));
 }
 function todayIso(){const n=new Date();const pad=x=>String(x).padStart(2,"0");return`${n.getFullYear()}-${pad(n.getMonth()+1)}-${pad(n.getDate())}`;}
@@ -550,14 +589,19 @@ function renderWeek(){
       : `${isToday?'<span class="today-pill">today</span>':''}${log.done?'<span class="check">✓</span>':''}${fdot}${bdot}`;
     const hasLog=log.done!=null||log.actualMi!=null||log.feel||log.body||log.note;
     const logRows=isRest
-      ? [log.body?`Body check: <b>${BODY[log.body]}</b>`:null, log.note?`Note: ${log.note}`:null]
-      : [`Did the session: <b>${log.done?"Yes":"No"}</b>`, log.actualMi!=null?`Actual miles: <b>${log.actualMi}</b>`:null, log.feel?`Felt: <b>${FEEL[log.feel]}</b>`:null, log.body?`Body check: <b>${BODY[log.body]}</b>`:null, log.note?`Note: ${log.note}`:null];
+      ? [log.body?`Body check: <b>${BODY[log.body]}</b>`:null]
+      : [`Did the session: <b>${log.done?"Yes":"No"}</b>`, log.actualMi!=null?`Actual miles: <b>${log.actualMi}</b>`:null, log.feel?`Felt: <b>${FEEL[log.feel]}</b>`:null, log.body?`Body check: <b>${BODY[log.body]}</b>`:null];
+    const note=parseNote(log.note);
+    const noteTagsHtml=note.tags.length?`<div class="notetags">${note.tags.map(t=>`<span class="notetag ${t.cls}">${t.icon} ${t.text}</span>`).join("")}</div>`:"";
+    const noteLinesHtml=note.lines.length?`<div class="note-h">Note</div><div class="notelines">${note.lines.map(l=>`<div class="sdetail-li">${l}</div>`).join("")}</div>`:"";
     const bodyFieldsHtml=`
       <div class="sdetail">
         <div class="sdetail-h">Logged</div>
         ${hasLog
           ? logRows.filter(Boolean).map(li=>`<div class="sdetail-li">${li}</div>`).join("")
           : `<div class="sdetail-li" style="color:var(--gray)">Not logged yet — this fills in from the daily chat check-in.</div>`}
+        ${noteTagsHtml}
+        ${noteLinesHtml}
       </div>`;
     const runSectionHtml=`
       <div class="subsection">
@@ -574,6 +618,13 @@ function renderWeek(){
           ${d.strengthDet.map(li=>`<div class="sdetail-li">${li}</div>`).join("")}
         </div>
       </div>`:"";
+    const pfSectionHtml=(d.pfDet&&d.pfDet.length)?`
+      <div class="subsection">
+        <div class="subhead" data-sub="${d.iso}-pf"><span>🦶 Plantar Fascia Protocol</span><span class="chev">›</span></div>
+        <div class="subbody" data-subbody="${d.iso}-pf">
+          ${d.pfDet.map(li=>`<div class="sdetail-li">${li}</div>`).join("")}
+        </div>
+      </div>`:"";
     card.innerHTML=`
       <div class="day-hd" data-iso="${d.iso}" role="button" tabindex="0">
         <div class="dow">${d.dow}<small>${d.label}</small></div>
@@ -583,6 +634,7 @@ function renderWeek(){
       <div class="dbody" data-body="${d.iso}">
         ${runSectionHtml}
         ${strengthSectionHtml}
+        ${pfSectionHtml}
         ${bodyFieldsHtml}
       </div>`;
     box.appendChild(card);
