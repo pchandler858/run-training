@@ -66,6 +66,13 @@ h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(26px,6vw,44px);li
 .sdetail-li{font-size:13.5px;color:var(--ink);padding-left:16px;position:relative;margin-bottom:5px;line-height:1.45}
 .sdetail-li::before{content:"";position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:var(--fir-soft)}
 .sdetail-li:last-child{margin-bottom:0}
+.subsection{border:1px solid var(--line);border-radius:10px;margin-top:12px;overflow:hidden}
+.subhead{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;font-family:'JetBrains Mono';font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--fir);font-weight:600;background:var(--paper)}
+.subhead:hover{background:var(--card)}
+.subhead .chev{font-size:12px;color:var(--gray);transition:transform .15s ease;flex-shrink:0}
+.subhead.open .chev{transform:rotate(90deg)}
+.subbody{display:none;padding:10px 14px 14px;background:var(--paper)}
+.subbody.open{display:block;animation:fade .18s ease}
 @keyframes fade{from{opacity:0}to{opacity:1}}
 .frow{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;margin-top:14px}
 .field{display:flex;flex-direction:column;gap:5px}
@@ -350,7 +357,7 @@ function addDays(iso,n){
   return{iso:`${dt.getUTCFullYear()}-${pad(dt.getUTCMonth()+1)}-${pad(dt.getUTCDate())}`,dow:DOWS[dt.getUTCDay()],label:`${MONTHS[dt.getUTCMonth()]} ${dt.getUTCDate()}`};
 }
 const STRENGTH={
-  lower:["Goblet squat 3x10","Bulgarian split squat 3x8 each","Romanian deadlift 2x10 moderate","Step downs 3x10 each","Standing calf raise 3x15 slow"],
+  lower:["Goblet squat 3x10","Bulgarian split squat 3x8 each","Romanian deadlift 2x10 moderate","Step downs 3x10 each","Standing calf raise 3x15 slow","Eccentric heel drop 3x12-15 slow (PF protocol)","Short-foot / toe doming 10-15 reps each foot (PF protocol)"],
   push:["Incline DB press 3x10","Flat DB bench 3x10","Standing DB shoulder press 3x10","Cable lateral raise 3x12","Tricep rope pushdown 3x12"],
   pull:["Chest supported row 3x10","Lat pulldown 3x10","Seated cable row 3x10","Hammer curl 3x12","Side plank 3x30 sec each","Dead bug 3x10 each"]
 };
@@ -420,19 +427,19 @@ function genDays(w){
         ? (w.phase==="base" ? `${thu}mi Steady` : w.thu)
         : `${thu}mi Easy${thuHasStrides?" + Strides":""}`);
   const thuDet = recovery
-    ? [`${thu} miles easy, HR 148-155.`,`Recovery week. Keep it gentle, this is about absorbing not building.`,`Strength: lower body if the body is fresh, otherwise skip.`,...STRENGTH.lower]
+    ? [`${thu} miles easy, HR 148-155.`,`Recovery week. Keep it gentle, this is about absorbing not building.`,`Strength after, if the body is fresh — otherwise skip it this week.`]
     : (isQuality
-        ? (w.phase==="base"? [...steadyDetail(thu), `Strength after or later: lower body.`, ...STRENGTH.lower]
-                            : [...qualityDetail(w.thu), `Strength after or later: lower body.`, ...STRENGTH.lower])
+        ? (w.phase==="base"? [...steadyDetail(thu), `Strength after or later.`]
+                            : [...qualityDetail(w.thu), `Strength after or later.`])
         : [`${thu} miles easy, HR 148-155.`,`Easy aerobic day.`,
             ...(thuHasStrides?[`Strides: 4 to 6 x 20 sec relaxed fast near the end, full recovery between. Focus on cadence, posture, relaxed turnover.`]:[]),
-            `Strength: lower body.`,...STRENGTH.lower]);
+            `Strength after.`]);
   const arr=[
     {off:0,t:"rest",s:"Rest Day",mi:0,sm:"Optional 20-25 min spin, HR under 150",str:"",det:["Full rest day, the most important one of the week after Saturday's long run.","Optional 20-25 min easy spin, low resistance, HR under 150. Blood flow only, not a workout.","This is where the durability gets built. Protect it."]},
     {off:1,t:"easy",s:`${tue}mi Easy Run`,mi:tue,sm:HR_E,str:"",det:[`${tue} miles easy, HR 148-155.`,`Smooth aerobic rhythm. Let the pace happen, do not force upper aerobic.`,`Get out by 6:00 to 6:30 am to beat the heat.`]},
-    {off:2,t:"easy",s:`${wed}mi Easy Buffer`,mi:wed,sm:HR_B+" · run or spin, your call on the body",str:"Pull + core strength",det:[`${wed} miles easy, HR under 155.`,`Buffer day. Absorb Tuesday's load, no pressure on mileage.`,`Run or spin based on how the body feels this morning. If the heel or IT band is talking, take the spin.`,`Strength: pull + core.`,...STRENGTH.pull]},
-    {off:3,t:thuType,s:thuTitle,mi:thu,sm:thuSm,str:"Lower body strength",det:thuDet},
-    {off:4,t:"easy",s:`${fri}mi Easy + Strides`,mi:fri,sm:HR_E+" · 4-6 x 20 sec",str:"Push strength",det:[`${fri} miles easy, HR 148-155.`,`Keep this genuinely easy, it sits between Thursday's legs and Saturday's long run.`,`Strides: 4 to 6 x 20 sec relaxed fast near the end, full recovery between. Focus on cadence, posture, relaxed turnover.`,`Strength: push.`,...STRENGTH.push]},
+    {off:2,t:"easy",s:`${wed}mi Easy Buffer`,mi:wed,sm:HR_B+" · run or spin, your call on the body",str:"Pull + core strength",strengthTitle:"Pull + Core Strength",strengthDet:STRENGTH.pull,det:[`${wed} miles easy, HR under 155.`,`Buffer day. Absorb Tuesday's load, no pressure on mileage.`,`Run or spin based on how the body feels this morning. If the heel or IT band is talking, take the spin.`]},
+    {off:3,t:thuType,s:thuTitle,mi:thu,sm:thuSm,str:"Lower body strength",strengthTitle:"Lower Body Strength",strengthDet:STRENGTH.lower,det:thuDet},
+    {off:4,t:"easy",s:`${fri}mi Easy + Strides`,mi:fri,sm:HR_E+" · 4-6 x 20 sec",str:"Push strength",strengthTitle:"Push Strength",strengthDet:STRENGTH.push,det:[`${fri} miles easy, HR 148-155.`,`Keep this genuinely easy, it sits between Thursday's legs and Saturday's long run.`,`Strides: 4 to 6 x 20 sec relaxed fast near the end, full recovery between. Focus on cadence, posture, relaxed turnover.`]},
     {off:5,t:"long",s:`${L}mi Long Run`,mi:L,sm:longStruct,str:"",det:longDetail(L)},
     {off:6,t:"rest",s:"Recovery Day",mi:0,sm:"Walk, mobility, or easy spin",str:"",det:["Recovery day.","Walk, mobility, or family activity. Optional 20-25 min easy spin.","Do not turn this into a session. Rest is part of the plan."]}
   ];
@@ -485,6 +492,21 @@ function renderWeek(){
           ? logRows.filter(Boolean).map(li=>`<div class="sdetail-li">${li}</div>`).join("")
           : `<div class="sdetail-li" style="color:var(--gray)">Not logged yet — this fills in from the daily chat check-in.</div>`}
       </div>`;
+    const runSectionHtml=`
+      <div class="subsection">
+        <div class="subhead open" data-sub="${d.iso}-run"><span>Run</span><span class="chev">›</span></div>
+        <div class="subbody open" data-subbody="${d.iso}-run">
+          ${(d.det||[]).map(li=>`<div class="sdetail-li">${li}</div>`).join("")}
+          ${SHOE_SUGGEST[d.iso]?`<div class="sdetail-li"><b>Suggested shoe:</b> ${SHOE_SUGGEST[d.iso]}</div>`:""}
+        </div>
+      </div>`;
+    const strengthSectionHtml=(d.strengthDet&&d.strengthDet.length)?`
+      <div class="subsection">
+        <div class="subhead" data-sub="${d.iso}-strength"><span>${d.strengthTitle}</span><span class="chev">›</span></div>
+        <div class="subbody" data-subbody="${d.iso}-strength">
+          ${d.strengthDet.map(li=>`<div class="sdetail-li">${li}</div>`).join("")}
+        </div>
+      </div>`:"";
     card.innerHTML=`
       <div class="day-hd" data-iso="${d.iso}" role="button" tabindex="0">
         <div class="dow">${d.dow}<small>${d.label}</small></div>
@@ -492,7 +514,8 @@ function renderWeek(){
         <div class="stat">${statHtml}</div>
       </div>
       <div class="dbody" data-body="${d.iso}">
-        <div class="sdetail"><div class="sdetail-h">Session detail</div>${(d.det||[]).map(li=>`<div class="sdetail-li">${li}</div>`).join("")}${SHOE_SUGGEST[d.iso]?`<div class="sdetail-li"><b>Suggested shoe:</b> ${SHOE_SUGGEST[d.iso]}</div>`:""}</div>
+        ${runSectionHtml}
+        ${strengthSectionHtml}
         ${bodyFieldsHtml}
       </div>`;
     box.appendChild(card);
@@ -507,6 +530,15 @@ function bindDays(){
     const tog=()=>{document.querySelector(`.dbody[data-body="${hd.dataset.iso}"]`).classList.toggle("open");};
     hd.addEventListener("click",tog);
     hd.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tog();}});
+  });
+  document.querySelectorAll(".subhead").forEach(sh=>{
+    const tog=(e)=>{
+      e.stopPropagation();
+      sh.classList.toggle("open");
+      document.querySelector(`.subbody[data-subbody="${sh.dataset.sub}"]`).classList.toggle("open");
+    };
+    sh.addEventListener("click",tog);
+    sh.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tog(e);}});
   });
 }
 document.getElementById("prev").addEventListener("click",()=>{if(idx>0){idx--;renderWeek();}});
