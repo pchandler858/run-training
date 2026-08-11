@@ -254,16 +254,16 @@ const raw={
     ["2026-07-27","11","",31,"Steady 6 mi"],
     ["2026-08-03","12","",33,"Steady 6 mi"],
     ["2026-08-10","10","cut",29,"Easy + strides"],
-    ["2026-08-17","12","",34,"Steady 6 mi"],
+    ["2026-08-17","12","",34,"Progression 6"],
     ["2026-08-24","13","",35,"Steady 6 mi"]
   ],
   half:[
     ["2026-08-31","13","",36,"2 x 10 min tempo"],["2026-09-07","13","",38,"3 x 10 min tempo"],
     ["2026-09-14","14","",39,"20 min tempo"],["2026-09-21","11","cut",34,"4 x 8 min threshold"],
     ["2026-09-28","14","",40,"5 x 1 mi threshold"],["2026-10-05","15","",41,"2 x 15 min tempo"],
-    ["2026-10-12","12","cut",36,"6 x 1 mi threshold"],["2026-10-19","15","",42,"3 x 2 mi @ HMP"],
-    ["2026-10-26","13","",40,"4 x 1 mi threshold"],["2026-11-02","14","peak",40,"2 x 2 mi @ HMP"],
-    ["2026-11-09","10","",32,"3 x 1 mi @ HMP"],["2026-11-16","Run to Stay Warm Half","race",22,"Shakeout + 2 x 1 mi HMP"]
+    ["2026-10-12","12","cut",36,"4 x 1 mi threshold"],["2026-10-19","15","",42,"3 x 2 mi @ HMP",3],
+    ["2026-10-26","13","",40,"4 x 1 mi threshold",3],["2026-11-02","14","peak",40,"Easy + strides (Saturday's the centerpiece)",4],
+    ["2026-11-09","10","",32,"3 x 1 mi @ HMP",3],["2026-11-16","Run to Stay Warm Half","race",22,"Shakeout + 2 x 1 mi HMP"]
   ],
   mara:[
     ["2026-11-23","7","",22,"Recovery jog only"],["2026-11-30","10","",28,"Ease back in"],
@@ -273,14 +273,16 @@ const raw={
     ["2027-01-18","16","",40,"5 x 1 mi threshold"],["2027-01-25","17","",42,"2 x 2 mi threshold"],
     ["2027-02-01","14","cut",36,"Tempo"],["2027-02-08","18","",43,"Threshold"],
     ["2027-02-15","18","",44,"3 x 2 mi @ MP"],["2027-02-22","15","cut",38,"Tempo"],
-    ["2027-03-01","20","",45,"Threshold"],["2027-03-08","18","",45,"2 x 3 mi @ MP"],
-    ["2027-03-15","16","cut",40,"Tempo"],["2027-03-22","20","peak",46,"Threshold"],
-    ["2027-03-29","18","",44,"2 x 2 mi @ MP"],["2027-04-05","16","",40,"MP tune 3 x 1 mi"],
-    ["2027-04-12","12","",32,"2 x 1 mi @ MP + strides"],["2027-04-19","Eugene Marathon","race",22,"Shakeout + 2 mi MP"]
+    ["2027-03-01","20","",45,"Threshold",4],["2027-03-08","18","",45,"2 x 3 mi @ MP",5],
+    ["2027-03-15","16","cut",40,"Tempo"],["2027-03-22","20","peak",46,"Easy + strides (Saturday's the centerpiece)",6],
+    ["2027-03-29","18","",44,"2 x 2 mi @ MP",6],["2027-04-05","16","",40,"MP tune 3 x 1 mi",4],
+    ["2027-04-12","12","",32,"2 x 1 mi @ MP + strides",3],["2027-04-19","Eugene Marathon","race",22,"Shakeout + 2 mi MP"]
   ]
 };
+// racePaceMi (6th array element, optional) = miles of that week's long run to run at goal race pace
+// instead of the generic capped-steady zone — see LONG RUN STRUCTURE / race-pace specificity notes.
 const weeks=[];
-["base","half","mara"].forEach(ph=>raw[ph].forEach(w=>weeks.push({iso:w[0],lr:w[1],flag:w[2],mi:w[3],thu:w[4],phase:ph})));
+["base","half","mara"].forEach(ph=>raw[ph].forEach(w=>weeks.push({iso:w[0],lr:w[1],flag:w[2],mi:w[3],thu:w[4],phase:ph,racePaceMi:w[5]||0})));
 
 // LOG is the source of truth for daily check-ins, written directly into this file by the
 // daily training check-in (Strava + Q&A). Keyed by ISO date. Fields match the tracker UI:
@@ -361,26 +363,82 @@ const STRENGTH={
   push:["Incline DB press 3x10","Flat DB bench 3x10","Standing DB shoulder press 3x10","Cable lateral raise 3x12","Tricep rope pushdown 3x12"],
   pull:["Chest supported row 3x10","Lat pulldown 3x10","Seated cable row 3x10","Hammer curl 3x12","Side plank 3x30 sec each","Dead bug 3x10 each"]
 };
-function longDetail(L){
-  const front=2, back=(L>=10?3:2), steady=Math.max(0,L-front-back);
-  const lines=[`Total ${L} miles, middle steady format.`,`Miles 1 to ${front}: easy, HR 148-158, ease into it.`];
-  if(steady>0)lines.push(`Miles ${front+1} to ${front+steady}: steady, HR 163-169, controlled aerobic pressure.`);
-  if(back>0)lines.push(`Miles ${L-back+1} to ${L}: easy, HR 148-155, relaxed finish.`);
+// Long runs are primarily an aerobic-endurance/durability stimulus, not a second quality workout —
+// Thursday's key session already owns the week's dedicated hard effort. The steady middle here is
+// capped by phase (rather than soaking up whatever mileage is left over) so long runs stay
+// predominantly easy even as total distance grows toward 20mi in the marathon block.
+// In the final long runs before each goal race (racePaceMi > 0, set per-week in `raw`), the generic
+// capped-steady zone is swapped out for a block of goal-race-pace miles at the end instead — real
+// specificity work (fueling, pacing discipline, race-effort feel) rather than another aerobic-pressure
+// rep of the same steady zone every single week.
+// Cutback weeks (flag "cut") override everything above and go fully easy — no steady, no race-pace
+// miles, regardless of what racePaceMi says for that week. A cutback that still carries a workout
+// inside the long run isn't actually a cutback; the whole point is to genuinely unload for a week.
+function longSplit(L,phase,racePaceMi,isCutback){
+  const front=2;
+  if(isCutback){
+    return{front,fill:0,steady:0,back:Math.max(0,L-front),racePace:0};
+  }
+  if(racePaceMi>0){
+    const racePace=Math.min(racePaceMi,Math.max(0,L-front-1));
+    const fill=Math.max(0,L-front-racePace);
+    return{front,fill,steady:0,back:0,racePace};
+  }
+  const backMin=(L>=10?3:2);
+  const steadyCap=phase==="base"?3:(phase==="half"?5:6);
+  const steady=Math.min(steadyCap,Math.max(0,L-front-backMin));
+  const back=Math.max(backMin,L-front-steady);
+  return{front,fill:0,steady,back,racePace:0};
+}
+function longDetail(L,phase,racePaceMi,isCutback){
+  const split=longSplit(L,phase,racePaceMi,isCutback);
+  if(isCutback){
+    return[
+      `Total ${L} miles — cutback week, long run is fully easy, no steady or race-pace work.`,
+      `Miles 1 to ${split.front}: easy, HR ≤158 as a ceiling — no minimum to hit, ease into it.`,
+      `Miles ${split.front+1} to ${L}: easy, HR ≤155 as a ceiling — go by feel, don't chase the number.`,
+      `This week is supposed to unload you. Do not fill it with a workout.`
+    ];
+  }
+  if(split.racePace>0){
+    const paceTxt=phase==="half"?"half marathon pace, about 7:05 to 7:20 per mile":"marathon pace, about 8:10 to 8:25 per mile";
+    return[
+      `Total ${L} miles — race-pace specificity long run, not a generic steady run.`,
+      `Miles 1 to ${split.front}: easy, HR ≤158 as a ceiling — no minimum to hit, ease into it.`,
+      ...(split.fill>0?[`Miles ${split.front+1} to ${split.front+split.fill}: easy, HR ≤155 as a ceiling. Stay relaxed and patient, save it for the pace miles.`]:[]),
+      `Final ${split.racePace} miles: ${paceTxt}. Hold the pace, do not chase it — this is about rehearsing race rhythm and fueling under fatigue, not testing fitness.`,
+      `No separate cooldown, the pace miles are the finish. Bring water/electrolytes and treat fueling like a race dress rehearsal.`
+    ];
+  }
+  const{front,steady,back}=split;
+  const lines=[`Total ${L} miles, mostly easy with a bounded steady middle.`,`Miles 1 to ${front}: easy, HR ≤158 as a ceiling — no minimum to hit, ease into it.`];
+  if(steady>0)lines.push(`Miles ${front+1} to ${front+steady}: steady, HR 163-169, controlled aerobic pressure — capped here on purpose, this isn't the week's hard session.`);
+  if(back>0)lines.push(`Miles ${L-back+1} to ${L}: easy, HR ≤155 as a ceiling, relaxed finish.`);
   lines.push(`Hold the steady zone, do not drift to threshold and do not race it. Bring water and electrolytes.`);
   return lines;
+}
+function progressionDetail(Q){
+  const seg=Math.max(1,Math.round(Q/3));
+  return[
+    `Total ${Q} miles, progression format — gets harder as it goes, not a flat effort like a steady run.`,
+    `Miles 1 to ${seg}: easy, HR ≤155 as a ceiling.`,
+    `Miles ${seg+1} to ${2*seg}: upper aerobic, HR 156-162, controlled pickup.`,
+    `Miles ${2*seg+1} to ${Q}: steady, HR 163-169. Finish strong and in control — a sustained lift, not a kick.`,
+    `The point is pacing discipline and finishing fresh-feeling despite the harder back half — a different stimulus than a flat steady run, on purpose.`
+  ];
 }
 function steadyDetail(Q){
   const front=2, back=1, steady=Math.max(0,Q-front-back);
   return [
     `Total ${Q} miles.`,
-    `Miles 1 to ${front}: easy, HR 148-158.`,
+    `Miles 1 to ${front}: easy, HR ≤158 as a ceiling.`,
     `Miles ${front+1} to ${front+steady}: steady, HR 163-169.`,
-    `Mile ${Q}: easy cool down, HR 148-155.`,
+    `Mile ${Q}: easy cool down, HR ≤155 as a ceiling.`,
     `Smooth, rhythmic, sustainable. Not threshold, not grinding. If it settles at 163-165, that is perfect.`
   ];
 }
 function qualityDetail(thu){
-  const out=[`Warm up 1 to 2 miles easy, HR 148-158, plus a few strides to open the legs.`];
+  const out=[`Warm up 1 to 2 miles easy, HR ≤158 as a ceiling, plus a few strides to open the legs.`];
   if(/HMP/i.test(thu))out.push(`Main set: ${thu.replace(/@ HMP/i,"at half marathon pace")}. Target about 7:05 to 7:20 per mile. Easy jog 2 to 3 min between reps.`);
   else if(/MP/i.test(thu))out.push(`Main set: ${thu.replace(/@ MP/i,"at marathon pace").replace(/MP tune/i,"marathon pace tune")}. Target about 8:10 to 8:25 per mile. Easy jog 2 to 3 min between reps.`);
   else if(/threshold/i.test(thu))out.push(`Main set: ${thu}. Threshold effort, HR 170-180, comfortably hard but controlled. Jog 90 sec to 2 min between reps.`);
@@ -397,7 +455,7 @@ function genDays(w){
     const raceName=w.lr, isHalf=/half/i.test(raceName);
     const arr=[
       {off:0,t:"rest",s:"Rest Day",mi:0,sm:"Optional easy spin",str:"",det:["Full rest day.","Optional 20-25 min easy spin, HR under 150. Blood flow only."]},
-      {off:1,t:"easy",s:"3mi Easy + Strides",mi:3,sm:HR_E,str:"",det:["3 miles easy, HR 148-155.","4 x 20 sec strides to stay sharp. Keep everything relaxed, this is taper week."]},
+      {off:1,t:"easy",s:"3mi Easy + Strides",mi:3,sm:HR_E,str:"",det:["3 miles easy, HR ≤155 as a ceiling.","4 x 20 sec strides to stay sharp. Keep everything relaxed, this is taper week."]},
       {off:2,t:"easy",s:"3mi Easy Buffer",mi:3,sm:HR_B,str:"",det:["3 miles easy, HR under 155.","Legs should be feeling springy by now. Do not chase anything."]},
       {off:3,t:"quality",s:`4mi Race Pace Tune — ${w.thu}`,mi:4,sm:"Race pace tune",str:"",det:["Warm up 1 mile easy.",`${w.thu}. Short and sharp just to touch race rhythm, then shut it down.`,"Cool down easy. You are sharpening, not building."]},
       {off:4,t:"rest",s:"Rest Day",mi:0,sm:"Legs up",str:"",det:["Full rest. Legs up, hydrate, normal eating.","Lay out race kit tonight."]},
@@ -415,32 +473,40 @@ function genDays(w){
   }else{
     const R=Math.max(0,w.mi-L-Q);tue=Math.round(R/3);wed=Math.round(R/3);fri=Math.max(0,R-tue-wed);thu=Q;
   }
-  const lf=2, lb=(L>=10?3:2), lst=Math.max(0,L-lf-lb);
-  const longStruct=`${lf} easy / ${lst} steady (163-169) / ${lb} easy`;
+  const isCutbackLong=w.flag==="cut";
+  const longSp=longSplit(L,w.phase,w.racePaceMi,isCutbackLong);
+  const longStruct=isCutbackLong
+    ? `${longSp.front} easy / ${longSp.back} easy (cutback, fully easy)`
+    : (longSp.racePace>0
+        ? `${longSp.front} easy / ${longSp.fill} easy / ${longSp.racePace} @ ${w.phase==="half"?"HMP":"MP"}`
+        : `${longSp.front} easy / ${longSp.steady} steady (163-169) / ${longSp.back} easy`);
   const stSt=Math.max(0,Q-3);
   const thuHasStrides=/strides/i.test(w.thu);
-  const thuSm=(isQuality&&w.phase==="base")?`2 easy / ${stSt} steady (163-169) / 1 easy`:(isQuality?"quality effort":(thuHasStrides?HR_E+" · 4-6 x 20 sec":HR_E));
+  const thuIsProgression=w.phase==="base"&&/progression/i.test(w.thu);
+  const thuSm=(isQuality&&w.phase==="base")
+    ? (thuIsProgression?"148-155 → 156-162 → 163-169 (build)":`2 easy / ${stSt} steady (163-169) / 1 easy`)
+    : (isQuality?"quality effort":(thuHasStrides?HR_E+" · 4-6 x 20 sec":HR_E));
   const thuType=recovery?"easy":(isQuality?"quality":"easy");
   const thuTitle = recovery
     ? `${thu}mi Recovery — ${w.thu}`
     : (isQuality
-        ? (w.phase==="base" ? `${thu}mi Steady` : w.thu)
+        ? (w.phase==="base" ? `${thu}mi ${thuIsProgression?"Progression":"Steady"}` : w.thu)
         : `${thu}mi Easy${thuHasStrides?" + Strides":""}`);
   const thuDet = recovery
-    ? [`${thu} miles easy, HR 148-155.`,`Recovery week. Keep it gentle, this is about absorbing not building.`,`Strength after, if the body is fresh — otherwise skip it this week.`]
+    ? [`${thu} miles easy, HR ≤155 as a ceiling.`,`Recovery week. Keep it gentle, this is about absorbing not building.`,`Strength after, if the body is fresh — otherwise skip it this week.`]
     : (isQuality
-        ? (w.phase==="base"? [...steadyDetail(thu), `Strength after or later.`]
-                            : [...qualityDetail(w.thu), `Strength after or later.`])
-        : [`${thu} miles easy, HR 148-155.`,`Easy aerobic day.`,
+        ? (w.phase==="base"? [...(thuIsProgression?progressionDetail(thu):steadyDetail(thu)), `Strength after or later — see STRENGTH ESCAPE HATCH: trim or skip it if the running session took a lot out of you.`]
+                            : [...qualityDetail(w.thu), `Strength after or later — see STRENGTH ESCAPE HATCH: trim or skip it if the running session took a lot out of you.`])
+        : [`${thu} miles easy, HR ≤155 as a ceiling.`,`Easy aerobic day.`,
             ...(thuHasStrides?[`Strides: 4 to 6 x 20 sec relaxed fast near the end, full recovery between. Focus on cadence, posture, relaxed turnover.`]:[]),
             `Strength after.`]);
   const arr=[
     {off:0,t:"rest",s:"Rest Day",mi:0,sm:"Optional 20-25 min spin, HR under 150",str:"",det:["Full rest day, the most important one of the week after Saturday's long run.","Optional 20-25 min easy spin, low resistance, HR under 150. Blood flow only, not a workout.","This is where the durability gets built. Protect it."]},
-    {off:1,t:"easy",s:`${tue}mi Easy Run`,mi:tue,sm:HR_E,str:"",det:[`${tue} miles easy, HR 148-155.`,`Smooth aerobic rhythm. Let the pace happen, do not force upper aerobic.`,`Get out by 6:00 to 6:30 am to beat the heat.`]},
+    {off:1,t:"easy",s:`${tue}mi Easy Run`,mi:tue,sm:HR_E,str:"",det:[`${tue} miles easy, HR ≤155 as a ceiling.`,`Smooth aerobic rhythm. Let the pace happen, do not force upper aerobic.`,`Get out by 6:00 to 6:30 am to beat the heat.`]},
     {off:2,t:"easy",s:`${wed}mi Easy Buffer`,mi:wed,sm:HR_B+" · run or spin, your call on the body",str:"Pull + core strength",strengthTitle:"Pull + Core Strength",strengthDet:STRENGTH.pull,det:[`${wed} miles easy, HR under 155.`,`Buffer day. Absorb Tuesday's load, no pressure on mileage.`,`Run or spin based on how the body feels this morning. If the heel or IT band is talking, take the spin.`]},
     {off:3,t:thuType,s:thuTitle,mi:thu,sm:thuSm,str:"Lower body strength",strengthTitle:"Lower Body Strength",strengthDet:STRENGTH.lower,det:thuDet},
-    {off:4,t:"easy",s:`${fri}mi Easy + Strides`,mi:fri,sm:HR_E+" · 4-6 x 20 sec",str:"Push strength",strengthTitle:"Push Strength",strengthDet:STRENGTH.push,det:[`${fri} miles easy, HR 148-155.`,`Keep this genuinely easy, it sits between Thursday's legs and Saturday's long run.`,`Strides: 4 to 6 x 20 sec relaxed fast near the end, full recovery between. Focus on cadence, posture, relaxed turnover.`]},
-    {off:5,t:"long",s:`${L}mi Long Run`,mi:L,sm:longStruct,str:"",det:longDetail(L)},
+    {off:4,t:"easy",s:`${fri}mi Easy + Strides`,mi:fri,sm:HR_E+" · 4-6 x 20 sec",str:"Push strength",strengthTitle:"Push Strength",strengthDet:STRENGTH.push,det:[`${fri} miles easy, HR ≤155 as a ceiling.`,`Keep this genuinely easy, it sits between Thursday's legs and Saturday's long run.`,`Strides: 4 to 6 x 20 sec relaxed fast near the end, full recovery between. Focus on cadence, posture, relaxed turnover.`]},
+    {off:5,t:"long",s:`${L}mi Long Run${isCutbackLong?" (cutback)":(longSp.racePace>0?` — ${longSp.racePace}mi @ ${w.phase==="half"?"HMP":"MP"}`:"")}`,mi:L,sm:longStruct,str:"",det:longDetail(L,w.phase,w.racePaceMi,isCutbackLong)},
     {off:6,t:"rest",s:"Recovery Day",mi:0,sm:"Walk, mobility, or easy spin",str:"",det:["Recovery day.","Walk, mobility, or family activity. Optional 20-25 min easy spin.","Do not turn this into a session. Rest is part of the plan."]}
   ];
   return arr.map(x=>({...x,...addDays(w.iso,x.off)}));
