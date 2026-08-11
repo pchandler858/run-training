@@ -310,7 +310,8 @@ const LOG = {
   "2026-08-05": {done:true, actualMi:5.01, feel:null, body:null, note:"No interactive check-in available this run (automated) — logged from Strava only. Second straight day on the gym treadmill for wildfire smoke (activity note: 'Damn smoke'). Landed on plan (5.01mi vs 5 planned buffer). Avg HR 139.8, max 158 (target under 155) — comfortably under the buffer cap. Recorded as one continuous lap, so no per-mile splits available today. Shoes: Vomero Plus Panda, 246.8 mi."},
   "2026-08-06": {done:false, actualMi:null, feel:null, body:2, note:"Skipped Thursday's planned steady 6mi (2 easy/3 steady/1 easy) — niggle below the outer right ankle bone plus right hip tight on waking. Air quality still bad, on top of the last two sessions already having to move to the gym treadmill. Playing it safe in base phase; also swapped Friday's planned easy run + strides for rest to arrive fresh for Saturday's 12-mile long run."},
   "2026-08-07": {done:false, actualMi:null, feel:null, body:null, note:"No interactive check-in available this run (automated) — full rest day, carried over from yesterday's swap (outer ankle niggle + right hip tightness after skipping Thursday's steady session; resting today to arrive fresh for Saturday's 12-mile long run). No run or spin logged."},
-  "2026-08-08": {done:true, actualMi:12.04, feel:1, body:2, note:"Long run nailed the planned structure by lap (2 easy / 7 steady / 3 easy): easy start avg HR 148.5 (target 148-158, right at the zone floor) at ~9:33/mi; steady middle avg HR 167.3, max 175 (target 163-169, dead on) at ~8:46/mi; 'easy' back 3 mi avg HR 169.6, max 177 (target 148-155) — ran hot, but not classic drift: got lost multiple times on a new, hillier route (136 ft gain) than usual, ran late, and rushed the last segment instead of easing off. Heel/plantar fascia tight on waking as usual (chronic, stable, loosens after about a quarter mile) — not a new flare, same pattern as prior entries. Slept poorly in a hotel, out of town this weekend. Shoes: Vomero Plus Panda, 258.9 mi."}
+  "2026-08-08": {done:true, actualMi:12.04, feel:1, body:2, note:"Long run nailed the planned structure by lap (2 easy / 7 steady / 3 easy): easy start avg HR 148.5 (target 148-158, right at the zone floor) at ~9:33/mi; steady middle avg HR 167.3, max 175 (target 163-169, dead on) at ~8:46/mi; 'easy' back 3 mi avg HR 169.6, max 177 (target 148-155) — ran hot, but not classic drift: got lost multiple times on a new, hillier route (136 ft gain) than usual, ran late, and rushed the last segment instead of easing off. Heel/plantar fascia tight on waking as usual (chronic, stable, loosens after about a quarter mile) — not a new flare, same pattern as prior entries. Slept poorly in a hotel, out of town this weekend. Shoes: Vomero Plus Panda, 258.9 mi."},
+  "2026-08-11": {done:true, actualMi:5.01, feel:null, body:null, note:"No interactive check-in available this run (automated) — logged from Strava only. Easy 5 (5.01mi vs 5 planned) landed on plan. Avg HR 138.9, max 158 (HR generally at/under 155 ceiling) — comfortably under the ceiling overall, with HR climbing gradually lap to lap (124→133→142→146→150, brief spike to 158 in the final seconds) while pace held steady to slightly faster (~9:22→9:05/mi) — normal warm-up-driven rise, not real drift. Cadence ~173 spm. Shoes: Vomero Plus Black, 247.2 mi. Softball tonight (Ekklesia Softball - Playoffs, 6:15pm) — extra load on top of today's run. PF routine: not asked (no interactive check-in this run)."}
 };
 
 // SHOE_SUGGEST holds the recommended shoe for an upcoming (usually not-yet-logged) day, written by the
@@ -334,7 +335,7 @@ const SHOE_SUGGEST = {
   "2026-08-15": "Vomero Plus Black — 252.2 mi projected (lowest of the 3 for Saturday's long run — rotating off White after Friday's easy + strides)",
   "2026-08-18": "Vomero Plus White — 253.4 mi projected (lowest of the 3 — rotating off Black after Saturday's 10-mile long run)",
   "2026-08-19": "Vomero Plus White — 258.4 mi projected (still the lowest of the 3 after Tuesday's run — stays in rotation another day)",
-  "2026-08-20": "Evo SL Blue — 21.5 mi (only active Evo SL pair)",
+  "2026-08-20": "Evo SL Blue — 21.6 mi (only active Evo SL pair)",
   "2026-08-21": "Vomero Plus Panda — 258.9 mi projected (lowest of the 3 — rotating back after White's back-to-back Tue/Wed runs)",
   "2026-08-22": "Vomero Plus Black — 262.2 mi projected (lowest of the 3 for Saturday's long run — rotating off Panda; will land around 274 mi after this run, closing in on the 275 mi watch threshold)"
 };
@@ -344,9 +345,9 @@ const SHOE_SUGGEST = {
 // shoes wear out faster and use 150 / 250. Powers the "Shoes" tab's mileage bars.
 const SHOES = {
   "Vomero Plus Panda": {brand:"Nike", miles:258.9, category:"trainer", watchAt:275, retireAt:350},
-  "Vomero Plus Black": {brand:"Nike", miles:242.2, category:"trainer", watchAt:275, retireAt:350},
+  "Vomero Plus Black": {brand:"Nike", miles:247.2, category:"trainer", watchAt:275, retireAt:350},
   "Vomero Plus White": {brand:"Nike", miles:244.4, category:"trainer", watchAt:275, retireAt:350},
-  "Evo SL Blue": {brand:"Adidas", miles:21.5, category:"trainer", watchAt:275, retireAt:350},
+  "Evo SL Blue": {brand:"Adidas", miles:21.6, category:"trainer", watchAt:275, retireAt:350},
   "Megablast": {brand:"ASICS", miles:283.8, category:"trainer", watchAt:275, retireAt:350},
   "Adios Pro 4": {brand:"Adidas", miles:57.2, category:"race", watchAt:125, retireAt:200},
   "VaporFly 3": {brand:"Nike", miles:103.6, category:"race", watchAt:125, retireAt:200},
