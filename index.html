@@ -389,12 +389,12 @@ function genDays(w){
   if(isRace){
     const raceName=w.lr, isHalf=/half/i.test(raceName);
     const arr=[
-      {off:0,t:"rest",s:"Rest",mi:0,sm:"Optional easy spin",str:"",det:["Full rest day.","Optional 20-25 min easy spin, HR under 150. Blood flow only."]},
-      {off:1,t:"easy",s:"Easy + strides",mi:3,sm:HR_E,str:"",det:["3 miles easy, HR 148-155.","4 x 20 sec strides to stay sharp. Keep everything relaxed, this is taper week."]},
-      {off:2,t:"easy",s:"Easy buffer",mi:3,sm:HR_B,str:"",det:["3 miles easy, HR under 155.","Legs should be feeling springy by now. Do not chase anything."]},
-      {off:3,t:"quality",s:w.thu,mi:4,sm:"Race pace tune",str:"",det:["Warm up 1 mile easy.",`${w.thu}. Short and sharp just to touch race rhythm, then shut it down.`,"Cool down easy. You are sharpening, not building."]},
-      {off:4,t:"rest",s:"Rest",mi:0,sm:"Legs up",str:"",det:["Full rest. Legs up, hydrate, normal eating.","Lay out race kit tonight."]},
-      {off:5,t:"easy",s:"Shakeout",mi:2,sm:"HR 148-155 + 4 strides",str:"",det:["2 miles very easy plus 4 short strides.","Loosen the legs for tomorrow. Nothing more."]},
+      {off:0,t:"rest",s:"Rest Day",mi:0,sm:"Optional easy spin",str:"",det:["Full rest day.","Optional 20-25 min easy spin, HR under 150. Blood flow only."]},
+      {off:1,t:"easy",s:"3mi Easy + Strides",mi:3,sm:HR_E,str:"",det:["3 miles easy, HR 148-155.","4 x 20 sec strides to stay sharp. Keep everything relaxed, this is taper week."]},
+      {off:2,t:"easy",s:"3mi Easy Buffer",mi:3,sm:HR_B,str:"",det:["3 miles easy, HR under 155.","Legs should be feeling springy by now. Do not chase anything."]},
+      {off:3,t:"quality",s:`4mi Race Pace Tune — ${w.thu}`,mi:4,sm:"Race pace tune",str:"",det:["Warm up 1 mile easy.",`${w.thu}. Short and sharp just to touch race rhythm, then shut it down.`,"Cool down easy. You are sharpening, not building."]},
+      {off:4,t:"rest",s:"Rest Day",mi:0,sm:"Legs up",str:"",det:["Full rest. Legs up, hydrate, normal eating.","Lay out race kit tonight."]},
+      {off:5,t:"easy",s:"2mi Shakeout + Strides",mi:2,sm:"HR 148-155 + 4 strides",str:"",det:["2 miles very easy plus 4 short strides.","Loosen the legs for tomorrow. Nothing more."]},
       {off:6,t:"race",s:raceName,mi:0,sm:"Race day",str:"",det:isHalf?["Run to Stay Warm Half, 13.1 miles, flat river path, 9:00 am start.","Goal 1:33 to 1:36. Settle the first 2 miles, then lock into rhythm.","Race in the Adios Pro 4. Fuel and hydrate to plan."]:["Eugene Marathon, 26.2 miles, 7:00 am start, finishes on Hayward Field.","Goal 3:30 to 3:40. Bank nothing early, run your pace, fuel every 30 to 40 min.","Race in the Adios Pro 4. This is the one the whole season points at."]}
     ];
     return arr.map(x=>({...x,...addDays(w.iso,x.off)}));
@@ -411,22 +411,30 @@ function genDays(w){
   const lf=2, lb=(L>=10?3:2), lst=Math.max(0,L-lf-lb);
   const longStruct=`${lf} easy / ${lst} steady (163-169) / ${lb} easy`;
   const stSt=Math.max(0,Q-3);
-  const thuSm=isQuality&&w.phase==="base"?`2 easy / ${stSt} steady (163-169) / 1 easy`:(isQuality?"quality effort":HR_E);
+  const thuHasStrides=/strides/i.test(w.thu);
+  const thuSm=(isQuality&&w.phase==="base")?`2 easy / ${stSt} steady (163-169) / 1 easy`:(isQuality?"quality effort":(thuHasStrides?HR_E+" · 4-6 x 20 sec":HR_E));
   const thuType=recovery?"easy":(isQuality?"quality":"easy");
+  const thuTitle = recovery
+    ? `${thu}mi Recovery — ${w.thu}`
+    : (isQuality
+        ? (w.phase==="base" ? `${thu}mi Steady` : w.thu)
+        : `${thu}mi Easy${thuHasStrides?" + Strides":""}`);
   const thuDet = recovery
     ? [`${thu} miles easy, HR 148-155.`,`Recovery week. Keep it gentle, this is about absorbing not building.`,`Strength: lower body if the body is fresh, otherwise skip.`,...STRENGTH.lower]
     : (isQuality
         ? (w.phase==="base"? [...steadyDetail(thu), `Strength after or later: lower body.`, ...STRENGTH.lower]
                             : [...qualityDetail(w.thu), `Strength after or later: lower body.`, ...STRENGTH.lower])
-        : [`${thu} miles easy, HR 148-155.`,`Easy aerobic day. Strength: lower body.`,...STRENGTH.lower]);
+        : [`${thu} miles easy, HR 148-155.`,`Easy aerobic day.`,
+            ...(thuHasStrides?[`Strides: 4 to 6 x 20 sec relaxed fast near the end, full recovery between. Focus on cadence, posture, relaxed turnover.`]:[]),
+            `Strength: lower body.`,...STRENGTH.lower]);
   const arr=[
-    {off:0,t:"rest",s:"Rest",mi:0,sm:"Optional 20-25 min spin, HR under 150",str:"",det:["Full rest day, the most important one of the week after Saturday's long run.","Optional 20-25 min easy spin, low resistance, HR under 150. Blood flow only, not a workout.","This is where the durability gets built. Protect it."]},
-    {off:1,t:"easy",s:"Easy Run",mi:tue,sm:HR_E,str:"",det:[`${tue} miles easy, HR 148-155.`,`Smooth aerobic rhythm. Let the pace happen, do not force upper aerobic.`,`Get out by 6:00 to 6:30 am to beat the heat.`]},
-    {off:2,t:"easy",s:"Easy buffer",mi:wed,sm:HR_B+" · run or spin, your call on the body",str:"Pull + core strength",det:[`${wed} miles easy, HR under 155.`,`Buffer day. Absorb Tuesday's load, no pressure on mileage.`,`Run or spin based on how the body feels this morning. If the heel or IT band is talking, take the spin.`,`Strength: pull + core.`,...STRENGTH.pull]},
-    {off:3,t:thuType,s:w.thu,mi:thu,sm:thuSm,str:"Lower body strength",det:thuDet},
-    {off:4,t:"easy",s:"Easy + strides",mi:fri,sm:HR_E+" · 4-6 x 20 sec",str:"Push strength",det:[`${fri} miles easy, HR 148-155.`,`Keep this genuinely easy, it sits between Thursday's legs and Saturday's long run.`,`Strides: 4 to 6 x 20 sec relaxed fast near the end, full recovery between. Focus on cadence, posture, relaxed turnover.`,`Strength: push.`,...STRENGTH.push]},
-    {off:5,t:"long",s:"Long run",mi:L,sm:longStruct,str:"",det:longDetail(L)},
-    {off:6,t:"rest",s:"Recovery",mi:0,sm:"Walk, mobility, or easy spin",str:"",det:["Recovery day.","Walk, mobility, or family activity. Optional 20-25 min easy spin.","Do not turn this into a session. Rest is part of the plan."]}
+    {off:0,t:"rest",s:"Rest Day",mi:0,sm:"Optional 20-25 min spin, HR under 150",str:"",det:["Full rest day, the most important one of the week after Saturday's long run.","Optional 20-25 min easy spin, low resistance, HR under 150. Blood flow only, not a workout.","This is where the durability gets built. Protect it."]},
+    {off:1,t:"easy",s:`${tue}mi Easy Run`,mi:tue,sm:HR_E,str:"",det:[`${tue} miles easy, HR 148-155.`,`Smooth aerobic rhythm. Let the pace happen, do not force upper aerobic.`,`Get out by 6:00 to 6:30 am to beat the heat.`]},
+    {off:2,t:"easy",s:`${wed}mi Easy Buffer`,mi:wed,sm:HR_B+" · run or spin, your call on the body",str:"Pull + core strength",det:[`${wed} miles easy, HR under 155.`,`Buffer day. Absorb Tuesday's load, no pressure on mileage.`,`Run or spin based on how the body feels this morning. If the heel or IT band is talking, take the spin.`,`Strength: pull + core.`,...STRENGTH.pull]},
+    {off:3,t:thuType,s:thuTitle,mi:thu,sm:thuSm,str:"Lower body strength",det:thuDet},
+    {off:4,t:"easy",s:`${fri}mi Easy + Strides`,mi:fri,sm:HR_E+" · 4-6 x 20 sec",str:"Push strength",det:[`${fri} miles easy, HR 148-155.`,`Keep this genuinely easy, it sits between Thursday's legs and Saturday's long run.`,`Strides: 4 to 6 x 20 sec relaxed fast near the end, full recovery between. Focus on cadence, posture, relaxed turnover.`,`Strength: push.`,...STRENGTH.push]},
+    {off:5,t:"long",s:`${L}mi Long Run`,mi:L,sm:longStruct,str:"",det:longDetail(L)},
+    {off:6,t:"rest",s:"Recovery Day",mi:0,sm:"Walk, mobility, or easy spin",str:"",det:["Recovery day.","Walk, mobility, or family activity. Optional 20-25 min easy spin.","Do not turn this into a session. Rest is part of the plan."]}
   ];
   return arr.map(x=>({...x,...addDays(w.iso,x.off)}));
 }
