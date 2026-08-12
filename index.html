@@ -73,6 +73,16 @@ h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(26px,6vw,44px);li
 .notetag.game{background:var(--gold-tint);color:#8a6006}
 .notetag.auto{background:var(--line);color:var(--gray)}
 .notelines .sdetail-li::before{background:var(--gray);opacity:.55}
+.pf-daily{margin:18px 0 4px}
+.pf-daily details{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.pf-daily summary{list-style:none;cursor:pointer;padding:13px 16px;font-family:'Space Grotesk';font-weight:600;font-size:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--fir)}
+.pf-daily summary::-webkit-details-marker{display:none}
+.pf-daily summary .pf-sub{font-family:'JetBrains Mono';font-weight:400;font-size:10.5px;color:var(--gray);text-transform:none;letter-spacing:0;margin-left:8px}
+.pf-daily summary .chev{font-size:12px;color:var(--gray);transition:transform .15s ease;flex-shrink:0;margin-left:auto}
+.pf-daily details[open] summary .chev{transform:rotate(90deg)}
+.pf-daily .pf-body{padding:2px 16px 16px}
+.pf-daily .pf-group-h{font-family:'JetBrains Mono';font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--gray);margin:12px 0 6px}
+.pf-daily .pf-group-h:first-child{margin-top:2px}
 .subsection{border:1px solid var(--line);border-radius:10px;margin-top:12px;overflow:hidden}
 .subhead{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;font-family:'JetBrains Mono';font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--fir);font-weight:600;background:var(--paper)}
 .subhead:hover{background:var(--card)}
@@ -186,6 +196,23 @@ h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(26px,6vw,44px);li
 <section class="goals">
   <div class="goal half"><span class="tag">Tune up · Nov 22</span><div class="name">Run to Stay Warm Half</div><div class="time">1:33 to 1:36</div></div>
   <div class="goal mara"><span class="tag">A goal · Apr 25</span><div class="name">Eugene Marathon</div><div class="time">3:30 to 3:40</div></div>
+</section>
+
+<section class="pf-daily">
+  <details>
+    <summary>🦶 Plantar Fascia Protocol<span class="pf-sub">applies every day, started Aug 10</span><span class="chev">›</span></summary>
+    <div class="pf-body">
+      <div class="pf-group-h">Every day</div>
+      <div class="sdetail-li">Morning, before the first step out of bed: point/flex the foot 10x, then towel-pull stretch into dorsiflexion, 30 sec x 3. Symptoms flare after rest, so stretching before loading the foot reduces first-step discomfort.</div>
+      <div class="sdetail-li">~5 min: frozen water bottle roll under the arch (2-3 min/foot), calf stretch both variants — straight-knee and bent-knee (30 sec x 2 each, both legs), big toe extension stretch (30 sec x 2).</div>
+      <div class="sdetail-li">Off-run: supportive shoes at all times, no barefoot walking on hard floors at home.</div>
+      <div class="pf-group-h">Most weeks (no fixed day — fit in when it works)</div>
+      <div class="sdetail-li">3x/week: eccentric heel drops off a step (3x12-15, slow 3-4 count lower), short-foot/toe doming (10-15 reps/foot), towel scrunches or toe marble pickups (1-2 min/foot). One of these three already lives in Thursday's lower body strength.</div>
+      <div class="sdetail-li">2x/week, any two days: lacrosse or golf ball self-massage under the arch, 2 min/foot.</div>
+      <div class="pf-group-h">Day-specific</div>
+      <div class="sdetail-li">Long runs 8mi+ show a taping/icing reminder right in that day's Run detail — no need to track it separately here.</div>
+    </div>
+  </details>
 </section>
 
 <div class="viewtoggle" role="tablist" aria-label="View mode">
@@ -337,7 +364,8 @@ const LOG = {
   "2026-08-06": {done:false, actualMi:null, feel:null, body:2, note:"Skipped Thursday's planned steady 6mi (2 easy/3 steady/1 easy) — niggle below the outer right ankle bone plus right hip tight on waking. Air quality still bad, on top of the last two sessions already having to move to the gym treadmill. Playing it safe in base phase; also swapped Friday's planned easy run + strides for rest to arrive fresh for Saturday's 12-mile long run."},
   "2026-08-07": {done:false, actualMi:null, feel:null, body:null, note:"No interactive check-in available this run (automated) — full rest day, carried over from yesterday's swap (outer ankle niggle + right hip tightness after skipping Thursday's steady session; resting today to arrive fresh for Saturday's 12-mile long run). No run or spin logged."},
   "2026-08-08": {done:true, actualMi:12.04, feel:1, body:2, note:"Long run nailed the planned structure by lap (2 easy / 7 steady / 3 easy): easy start avg HR 148.5 (target 148-158, right at the zone floor) at ~9:33/mi; steady middle avg HR 167.3, max 175 (target 163-169, dead on) at ~8:46/mi; 'easy' back 3 mi avg HR 169.6, max 177 (target 148-155) — ran hot, but not classic drift: got lost multiple times on a new, hillier route (136 ft gain) than usual, ran late, and rushed the last segment instead of easing off. Heel/plantar fascia tight on waking as usual (chronic, stable, loosens after about a quarter mile) — not a new flare, same pattern as prior entries. Slept poorly in a hotel, out of town this weekend. Shoes: Vomero Plus Panda, 258.9 mi."},
-  "2026-08-11": {done:true, actualMi:5.01, feel:null, body:null, note:"No interactive check-in available this run (automated) — logged from Strava only. Easy 5 (5.01mi vs 5 planned) landed on plan. Avg HR 138.9, max 158 (HR generally at/under 155 ceiling) — comfortably under the ceiling overall, with HR climbing gradually lap to lap (124→133→142→146→150, brief spike to 158 in the final seconds) while pace held steady to slightly faster (~9:22→9:05/mi) — normal warm-up-driven rise, not real drift. Cadence ~173 spm. Shoes: Vomero Plus Black, 247.2 mi. Softball tonight (Ekklesia Softball - Playoffs, 6:15pm) — extra load on top of today's run. PF routine: not asked (no interactive check-in this run)."}
+  "2026-08-11": {done:true, actualMi:5.01, feel:null, body:null, note:"No interactive check-in available this run (automated) — logged from Strava only. Easy 5 (5.01mi vs 5 planned) landed on plan. Avg HR 138.9, max 158 (HR generally at/under 155 ceiling) — comfortably under the ceiling overall, with HR climbing gradually lap to lap (124→133→142→146→150, brief spike to 158 in the final seconds) while pace held steady to slightly faster (~9:22→9:05/mi) — normal warm-up-driven rise, not real drift. Cadence ~173 spm. Shoes: Vomero Plus Black, 247.2 mi. Softball tonight (Ekklesia Softball - Playoffs, 6:15pm) — extra load on top of today's run. PF routine: not asked (no interactive check-in this run)."},
+  "2026-08-12": {done:false, actualMi:null, feel:null, body:2, note:"Skipped today's planned 5mi buffer run entirely, slept in instead. Body run down and tight all over this morning (general, not heel/PF or IT band specific) — legs were tight during softball last night and carried into this morning. Stacking two softball games Tuesday night (Ekklesia Playoffs 6:15pm + Dinger Daddies vs Kaminski Tool 7:45pm) on top of Tuesday's run caught up with him; called it 'go go go lately' and felt his body telling him to take a breather. Right call, not a compliance miss. PF routine: not yet done as of check-in, may still fit it in later today."}
 };
 
 // SHOE_SUGGEST holds the recommended shoe for an upcoming (usually not-yet-logged) day, written by the
@@ -390,15 +418,10 @@ const STRENGTH={
   push:["Incline DB press 3x10","Flat DB bench 3x10","Standing DB shoulder press 3x10","Cable lateral raise 3x12","Tricep rope pushdown 3x12"],
   pull:["Chest supported row 3x10","Lat pulldown 3x10","Seated cable row 3x10","Hammer curl 3x12","Side plank 3x30 sec each","Dead bug 3x10 each"]
 };
-// Standing plantar fasciitis protocol (started Aug 10 2026) — shown on every day, not just Thursday's
-// strength list, since the morning stretch and 5-min routine are daily habits, not a workout.
-const PF_DAILY=[
-  "Morning, before the first step out of bed: point/flex the foot 10x, then towel-pull stretch into dorsiflexion, 30 sec x 3. Symptoms flare after rest, so stretching before loading the foot reduces first-step discomfort.",
-  "~5 min: frozen water bottle roll under the arch (2-3 min/foot), calf stretch both variants — straight-knee and bent-knee (30 sec x 2 each, both legs), big toe extension stretch (30 sec x 2).",
-  "Off-run: supportive shoes at all times, no barefoot walking on hard floors at home.",
-  "3x/week (one session is folded into Thursday's lower body strength below): eccentric heel drops off a step (3x12-15, slow 3-4 count lower), short-foot/toe doming (10-15 reps/foot), towel scrunches or toe marble pickups (1-2 min/foot).",
-  "2x/week, any two days: lacrosse or golf ball self-massage under the arch, 2 min/foot."
-];
+// Standing plantar fasciitis protocol (started Aug 10 2026). The daily-habit items (morning
+// stretch, 5-min routine, footwear) live once in the static "pf-daily" card near the top of the
+// page, not repeated on every day card. Only the day-specific piece — the long-run 8mi+
+// taping/icing reminder — gets folded into that day's own Run detail, via PF_LONGRUN below.
 const PF_LONGRUN="Long run 8mi+: consider taping the arch or a supportive insole, ice the arch 10 min after.";
 // Long runs are primarily an aerobic-endurance/durability stimulus, not a second quality workout —
 // Thursday's key session already owns the week's dedicated hard effort. The steady middle here is
@@ -499,7 +522,6 @@ function genDays(w){
       {off:5,t:"easy",s:"2mi Shakeout + Strides",mi:2,sm:"HR 148-155 + 4 strides",str:"",det:["2 miles very easy plus 4 short strides.","Loosen the legs for tomorrow. Nothing more."]},
       {off:6,t:"race",s:raceName,mi:0,sm:"Race day",str:"",det:isHalf?["Run to Stay Warm Half, 13.1 miles, flat river path, 9:00 am start.","Goal 1:33 to 1:36. Settle the first 2 miles, then lock into rhythm.","Race in the Adios Pro 4. Fuel and hydrate to plan."]:["Eugene Marathon, 26.2 miles, 7:00 am start, finishes on Hayward Field.","Goal 3:30 to 3:40. Bank nothing early, run your pace, fuel every 30 to 40 min.","Race in the Adios Pro 4. This is the one the whole season points at."]}
     ];
-    arr.forEach(o=>{o.pfDet=PF_DAILY;});
     return arr.map(x=>({...x,...addDays(w.iso,x.off)}));
   }
   const L=parseFloat(w.lr)||0;
@@ -544,11 +566,9 @@ function genDays(w){
     {off:2,t:"easy",s:`${wed}mi Easy Buffer`,mi:wed,sm:HR_B+" · run or spin, your call on the body",str:"Pull + core strength",strengthTitle:"Pull + Core Strength",strengthDet:STRENGTH.pull,det:[`${wed} miles easy, HR under 155.`,`Buffer day. Absorb Tuesday's load, no pressure on mileage.`,`Run or spin based on how the body feels this morning. If the heel or IT band is talking, take the spin.`]},
     {off:3,t:thuType,s:thuTitle,mi:thu,sm:thuSm,str:"Lower body strength",strengthTitle:"Lower Body Strength",strengthDet:STRENGTH.lower,det:thuDet},
     {off:4,t:"easy",s:`${fri}mi Easy + Strides`,mi:fri,sm:HR_E+" · 4-6 x 20 sec",str:"Push strength",strengthTitle:"Push Strength",strengthDet:STRENGTH.push,det:[`${fri} miles easy, HR ≤155 as a ceiling.`,`Keep this genuinely easy, it sits between Thursday's legs and Saturday's long run.`,`Strides: 4 to 6 x 20 sec relaxed fast near the end, full recovery between. Focus on cadence, posture, relaxed turnover.`]},
-    {off:5,t:"long",s:`${L}mi Long Run${isCutbackLong?" (cutback)":(longSp.racePace>0?` — ${longSp.racePace}mi @ ${w.phase==="half"?"HMP":"MP"}`:"")}`,mi:L,sm:longStruct,str:"",det:longDetail(L,w.phase,w.racePaceMi,isCutbackLong)},
+    {off:5,t:"long",s:`${L}mi Long Run${isCutbackLong?" (cutback)":(longSp.racePace>0?` — ${longSp.racePace}mi @ ${w.phase==="half"?"HMP":"MP"}`:"")}`,mi:L,sm:longStruct,str:"",det:(L>=8?[...longDetail(L,w.phase,w.racePaceMi,isCutbackLong),PF_LONGRUN]:longDetail(L,w.phase,w.racePaceMi,isCutbackLong))},
     {off:6,t:"rest",s:"Recovery Day",mi:0,sm:"Walk, mobility, or easy spin",str:"",det:["Recovery day.","Walk, mobility, or family activity. Optional 20-25 min easy spin.","Do not turn this into a session. Rest is part of the plan."]}
   ];
-  arr.forEach(o=>{o.pfDet=PF_DAILY;});
-  if(L>=8)arr[5].pfDet=[...PF_DAILY,PF_LONGRUN];
   return arr.map(x=>({...x,...addDays(w.iso,x.off)}));
 }
 function todayIso(){const n=new Date();const pad=x=>String(x).padStart(2,"0");return`${n.getFullYear()}-${pad(n.getMonth()+1)}-${pad(n.getDate())}`;}
@@ -618,13 +638,6 @@ function renderWeek(){
           ${d.strengthDet.map(li=>`<div class="sdetail-li">${li}</div>`).join("")}
         </div>
       </div>`:"";
-    const pfSectionHtml=(d.pfDet&&d.pfDet.length)?`
-      <div class="subsection">
-        <div class="subhead" data-sub="${d.iso}-pf"><span>🦶 Plantar Fascia Protocol</span><span class="chev">›</span></div>
-        <div class="subbody" data-subbody="${d.iso}-pf">
-          ${d.pfDet.map(li=>`<div class="sdetail-li">${li}</div>`).join("")}
-        </div>
-      </div>`:"";
     card.innerHTML=`
       <div class="day-hd" data-iso="${d.iso}" role="button" tabindex="0">
         <div class="dow">${d.dow}<small>${d.label}</small></div>
@@ -634,7 +647,6 @@ function renderWeek(){
       <div class="dbody" data-body="${d.iso}">
         ${runSectionHtml}
         ${strengthSectionHtml}
-        ${pfSectionHtml}
         ${bodyFieldsHtml}
       </div>`;
     box.appendChild(card);
