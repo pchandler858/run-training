@@ -4,13 +4,32 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Daily Tracker to Eugene 2027</title>
+<script>
+(function(){
+  try{
+    var t=localStorage.getItem('theme');
+    if(!t){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}
+    if(t==='dark')document.documentElement.setAttribute('data-theme','dark');
+  }catch(e){}
+})();
+</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap');
 :root{
-  --ink:#151a17;--paper:#f5f3ec;--card:#fbfaf5;--fir:#1f5c3d;--fir-soft:#2f7a53;--fir-tint:#e4ede7;
+  color-scheme:light;
+  --ink:#151a17;--paper:#f5f3ec;--card:#fbfaf5;--surface:#fff;--fir:#1f5c3d;--fir-soft:#2f7a53;--fir-tint:#e4ede7;
   --gold:#d99a1c;--gold-tint:#f6ecd2;--gray:#7b837c;--line:#dcdccf;
   --base-c:#5b7c94;--half-c:#2f7a53;--mara-c:#b5561f;
   --rough:#c0492f;--ok:#d99a1c;--good:#2f7a53;--strong:#1f5c3d;--rest:#b7bcae;
+  --shoe-tag-bg:#ece9de;--shoe-tag-fg:#5c5747;--game-tag-fg:#8a6006;--chip-cut-bg:#e2e9ee;
+}
+[data-theme="dark"]{
+  color-scheme:dark;
+  --ink:#e9ebe2;--paper:#14170f;--card:#1d2117;--surface:#262b1f;--fir:#3f9868;--fir-soft:#3f9868;--fir-tint:#1f3327;
+  --gold:#e3ac3f;--gold-tint:#3a2f14;--gray:#9aa392;--line:#333829;
+  --base-c:#7fa8c4;--half-c:#3f9868;--mara-c:#d1712c;
+  --rough:#e0664c;--ok:#e3ac3f;--good:#3f9868;--strong:#6cd9a0;--rest:#7c8274;
+  --shoe-tag-bg:#2c2f24;--shoe-tag-fg:#c9c3ae;--game-tag-fg:#e8bf6b;--chip-cut-bg:#223040;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
@@ -35,7 +54,10 @@ h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(26px,6vw,44px);li
 .goal .name{font-family:'Space Grotesk';font-weight:600;font-size:15px;margin:2px 0 6px}
 .goal .time{font-family:'Space Grotesk';font-weight:700;font-size:25px}
 .nav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:26px 0 6px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
-.arrowbtn{font-family:'Space Grotesk';font-size:20px;font-weight:600;width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;flex-shrink:0}
+.arrowbtn{font-family:'Space Grotesk';font-size:20px;font-weight:600;width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;flex-shrink:0}
+.header-row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.theme-toggle{font-size:16px;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;line-height:1;padding:0}
+.theme-toggle:hover{border-color:var(--fir-soft)}
 .arrowbtn:hover{border-color:var(--fir-soft)}.arrowbtn:disabled{opacity:.3;cursor:default}
 .wklabel{text-align:center;flex:1;min-width:0}
 .wklabel .wkname{font-family:'Space Grotesk';font-weight:600;font-size:16px}
@@ -69,8 +91,8 @@ h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(26px,6vw,44px);li
 .note-h{font-family:'JetBrains Mono';font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--gray);margin:12px 0 6px}
 .notetags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
 .notetag{font-family:'JetBrains Mono';font-size:10.5px;padding:4px 9px;border-radius:7px;display:inline-flex;align-items:center;gap:5px;line-height:1.3;background:var(--fir-tint);color:var(--fir)}
-.notetag.shoe{background:#ece9de;color:#5c5747}
-.notetag.game{background:var(--gold-tint);color:#8a6006}
+.notetag.shoe{background:var(--shoe-tag-bg);color:var(--shoe-tag-fg)}
+.notetag.game{background:var(--gold-tint);color:var(--game-tag-fg)}
 .notetag.auto{background:var(--line);color:var(--gray)}
 .notelines .sdetail-li::before{background:var(--gray);opacity:.55}
 .pf-daily{margin:18px 0 4px}
@@ -94,9 +116,9 @@ h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(26px,6vw,44px);li
 .frow{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;margin-top:14px}
 .field{display:flex;flex-direction:column;gap:5px}
 .field label{font-family:'JetBrains Mono';font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--gray)}
-.field input[type=number]{width:88px;font-family:'JetBrains Mono';font-size:15px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+.field input[type=number]{width:88px;font-family:'JetBrains Mono';font-size:15px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
 .opts{display:flex;gap:5px;flex-wrap:wrap}
-.opts button{font-family:'Space Grotesk';font-weight:500;font-size:12px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
+.opts button{font-family:'Space Grotesk';font-weight:500;font-size:12px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
 .opts button[data-active="true"]{color:#fff;border-color:transparent}
 .opts.feel button[data-v="1"][data-active="true"]{background:var(--rough)}
 .opts.feel button[data-v="2"][data-active="true"]{background:var(--ok)}
@@ -108,7 +130,7 @@ h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(26px,6vw,44px);li
 .done-toggle{display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;font-family:'Space Grotesk';font-weight:500;margin-top:14px}
 .done-toggle input{width:18px;height:18px;accent-color:var(--fir)}
 .note-field{width:100%;margin-top:14px}
-.note-field textarea{width:100%;min-height:52px;font-family:'Inter';font-size:14px;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);resize:vertical}
+.note-field textarea{width:100%;min-height:52px;font-family:'Inter';font-size:14px;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);resize:vertical}
 .actions{display:flex;gap:8px;margin-top:14px;align-items:center}
 .btn{font-family:'Space Grotesk';font-weight:600;font-size:13px;padding:9px 18px;border-radius:8px;border:none;cursor:pointer}
 .btn.save{background:var(--fir);color:#fff}.btn.clear{background:transparent;color:var(--gray);border:1px solid var(--line)}
@@ -149,7 +171,7 @@ h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(26px,6vw,44px);li
 .pmi{font-family:'JetBrains Mono';font-size:11px;color:var(--gray);white-space:nowrap}
 .pthu{font-size:12.5px;color:var(--ink)}
 .pchip{font-family:'JetBrains Mono';font-size:8.5px;letter-spacing:.05em;text-transform:uppercase;padding:2px 5px;border-radius:4px;margin-left:5px;vertical-align:middle}
-.pchip.cut{background:#e2e9ee;color:var(--base-c)}
+.pchip.cut{background:var(--chip-cut-bg);color:var(--base-c)}
 .pchip.peak{background:var(--fir-tint);color:var(--fir)}
 .prow.race{background:var(--gold-tint)}
 .prow.race .plr{color:var(--mara-c);font-size:12.5px}
@@ -175,7 +197,10 @@ h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(26px,6vw,44px);li
 </head>
 <body>
 <header>
-  <span class="eyebrow">Daily Tracker · Season 2026 / 2027</span>
+  <div class="header-row">
+    <span class="eyebrow">Daily Tracker · Season 2026 / 2027</span>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
+  </div>
   <h1>One day at a time</h1>
   <p class="sub">The plan sets the target. Each morning you check how the body feels and decide: run it, ease it, or rest it. Log the day and it saves right here.</p>
 </header>
@@ -273,7 +298,7 @@ h1{font-family:'Space Grotesk';font-weight:700;font-size:clamp(26px,6vw,44px);li
     <tr><td>VO2 / high intensity</td><td>181+</td></tr>
   </table>
 </section>
-<div class="foot">Your daily log saves in this page<br>Easy on the Vomero Plus · steady on the Evo SL · races on the Adios Pro 4</div>
+<div class="foot">Your daily log saves in this page<br>Easy/long on the Vomero Plus or Superblast 3 · steady on the Evo SL · races on the Adios Pro 4</div>
 
 <script>
 const FEEL=["","Rough","OK","Good","Strong"];
@@ -368,7 +393,8 @@ const LOG = {
   "2026-08-12": {done:false, actualMi:null, feel:null, body:2, note:"Skipped today's planned 5mi buffer run entirely, slept in instead. Body run down and tight all over this morning (general, not heel/PF or IT band specific) — legs were tight during softball last night and carried into this morning. Stacking two softball games Tuesday night (Ekklesia Playoffs 6:15pm + Dinger Daddies vs Kaminski Tool 7:45pm) on top of Tuesday's run caught up with him; called it 'go go go lately' and felt his body telling him to take a breather. Right call, not a compliance miss. PF routine: not yet done as of check-in, may still fit it in later today."},
   "2026-08-13": {done:true, actualMi:5.01, feel:null, body:null, note:"No interactive check-in available this run (automated) — logged from Strava only. Easy + strides (5.01mi vs 5 planned, cutback week) landed on plan. Avg HR 143.2, max 159 (HR generally at/under 155 ceiling) — comfortably under overall, with HR climbing steadily lap to lap (130.6→141.3→144.7→149.3→150.1, spiking to 156 in the final seconds) while pace held essentially flat (9:13→9:01/mi) — consistent with the planned strides plus the usual warm-up-driven rise seen on other easy days, not real drift. Cadence ~87 (single-foot count). Shoes: Vomero Plus White, 249.4 mi. PF routine: not asked (no interactive check-in this run)."},
   "2026-08-14": {done:true, actualMi:4.01, feel:null, body:2, note:"Easy + strides (4.01mi vs 4 planned, cutback week) landed on plan by distance. Pace ~9:11/mi, cadence ~87 (single-foot count, ~174 spm) — genuinely easy, and max speed spiked to ~5:45/mi pace late in the run, consistent with strides. Preston confirms the HR monitor died about a half mile in — matches the data (flatlined at a pegged 145-146 with matching max after mile 1), so that reading is disregarded, not a real effort signal. Whole body felt very heavy today — Preston's read is lingering fatigue from a hectic last week to ten days (stacked softball nights, a skipped Wednesday run), not a new issue. Shoes: Vomero Plus Grey, 4.0 mi (Preston corrected the Strava gear assignment — brand new pair, first run today, not Vomero Plus Panda as originally logged). PF routine: not asked (no interactive check-in this run)."},
-  "2026-08-15": {done:true, actualMi:10.02, feel:null, body:null, note:"No interactive check-in available this run (automated) — logged from Strava only. Cutback week long run (10.02mi vs 10 planned) landed fully easy per plan. Pace held rock-flat all the way through, roughly 9:10-9:20/mi mile after mile, no fade at all. Avg HR 153.2, max 164 (HR ≤155 ceiling on a cutback long run) — HR eased up from a slow ~121 opening quarter mile to a 155-158 plateau by the midpoint and held there to the finish; mild cardiac drift (HR up, pace flat) over a 90+ minute effort, not a flag on an easy cutback day. Shoes: Vomero Plus Grey, 14.0 mi. PF routine: not asked (no interactive check-in this run)."}
+  "2026-08-15": {done:true, actualMi:10.02, feel:2, body:2, note:"Cutback week long run (10.02mi vs 10 planned) landed fully easy per plan. Pace held rock-flat all the way through, roughly 9:10-9:20/mi mile after mile, no fade at all. Avg HR 153.2, max 164 (HR ≤155 ceiling on a cutback long run) — HR eased up from a slow ~121 opening quarter mile to a 155-158 plateau by the midpoint and held there to the finish; mild cardiac drift (HR up, pace flat) over a 90+ minute effort, not a flag on an easy cutback day. Felt OK. Body check tight on waking — general, not heel/PF or IT band. Shoes: Vomero Plus Grey, 14.0 mi. PF routine: partial."},
+  "2026-08-18": {done:true, actualMi:5.01, feel:null, body:null, note:"No interactive check-in available this run (automated) — logged from Strava only. Easy 5 (5.01mi vs 5 planned) landed on plan. Avg HR 142.8, max 158 (HR generally at/under 155 ceiling) — comfortably under overall, with HR climbing steadily lap to lap (128→142→146→147→150) while pace held essentially flat (~9:00-9:23/mi) — same warm-up-driven pattern seen on nearly every easy day this block, not real drift. Cadence ~87 (single-foot count, ~173 spm). Shoes: Superblast 3 Black, 5.0 mi (brand new pair, first run today). Softball tonight (Dinger Daddies vs Mudville - Away, 7:45pm) — extra load on top of today's run. PF routine: not asked (no interactive check-in this run)."}
 };
 
 // SHOE_SUGGEST holds the recommended shoe for an upcoming (usually not-yet-logged) day, written by the
@@ -390,16 +416,16 @@ const SHOE_SUGGEST = {
   "2026-08-13": "Vomero Plus Black — 247.2 mi projected (lowest of the 3 — rotating off White after Wednesday's buffer run)",
   "2026-08-14": "Vomero Plus Black — 247.2 mi (lowest-mileage of the 3 active Vomero Plus pairs, confirmed after today's easy + strides run went to White instead)",
   "2026-08-15": "Vomero Plus Grey — 4.0 mi (brand new pair, first worn today — lowest of the 4 active Vomero Plus pairs by a wide margin, so it'll carry the rotation until it catches up to Panda/Black/White)",
-  "2026-08-18": "Vomero Plus Grey — 14.0 mi projected (still lowest of the 4 by a wide margin — stays in rotation)",
-  "2026-08-19": "Vomero Plus Grey — 19.0 mi projected (still lowest of the 4 — stays in rotation)",
+  "2026-08-18": "Superblast 3 Black — 0.0 mi (brand new pair, first worn today — lowest of the 5 active easy/long pairs by a wide margin, so it takes over the rotation from Grey)",
+  "2026-08-19": "Superblast 3 Black — 5.0 mi (confirmed lowest of the 5 after today's run — stays in rotation)",
   "2026-08-20": "Evo SL Blue — 21.5 mi (only active Evo SL pair)",
-  "2026-08-21": "Vomero Plus Grey — 24.0 mi projected (still lowest of the 4 — stays in rotation)",
-  "2026-08-22": "Vomero Plus Grey — 30.0 mi projected (still lowest of the 4 for Saturday's long run — stays in rotation)",
-  "2026-08-25": "Vomero Plus Grey — 42.0 mi projected (still lowest of the 4 — stays in rotation)",
-  "2026-08-26": "Vomero Plus Grey — 47.0 mi projected (still lowest of the 4 — stays in rotation; Panda/Black/White have sat idle since Aug 13 at this rate — worth a manual swap if you'd rather break Grey in more gradually)",
+  "2026-08-21": "Superblast 3 Black — 10.0 mi projected (still lowest of the 5 — stays in rotation)",
+  "2026-08-22": "Vomero Plus Grey — 14.0 mi (rotating in for Saturday's long run — lowest of the 5 once Superblast 3 hits 16.0 after Friday's run)",
+  "2026-08-25": "Superblast 3 Black — 16.0 mi projected (lowest of the 5 again — rotating off Grey after Saturday's long run)",
+  "2026-08-26": "Superblast 3 Black — 21.0 mi projected (still lowest of the 5 — stays in rotation)",
   "2026-08-27": "Evo SL Blue — 27.5 mi projected (only active Evo SL pair, after Aug 20's progression run)",
-  "2026-08-28": "Vomero Plus Grey — 52.0 mi projected (still lowest of the 4 by a wide margin — stays in rotation)",
-  "2026-08-29": "Vomero Plus Grey — 58.0 mi projected (still lowest of the 4 for Saturday's long run — stays in rotation)"
+  "2026-08-28": "Vomero Plus Grey — 26.0 mi projected (even with Superblast 3 at 26.0 after Wednesday's run — rotating to Grey to keep both moving; Panda/Black/White remain untouched in the 247-259 mi range, all approaching the 275 watch line — due a manual swap in if you'd rather spread wear across all 5)",
+  "2026-08-29": "Superblast 3 Black — 26.0 mi projected (lowest of the 5 for Saturday's long run — rotating back after Grey's Friday run pushed Grey to 32.0)"
 };
 
 // SHOES holds every non-retired shoe from Strava gear, refreshed each check-in from that day's live
@@ -412,6 +438,7 @@ const SHOES = {
   "Vomero Plus White": {brand:"Nike", miles:249.4, category:"trainer", watchAt:275, retireAt:350},
   "Evo SL Blue": {brand:"Adidas", miles:21.5, category:"trainer", watchAt:275, retireAt:350},
   "Megablast": {brand:"ASICS", miles:283.8, category:"trainer", watchAt:275, retireAt:350},
+  "Superblast 3 Black": {brand:"ASICS", miles:5.0, category:"trainer", watchAt:275, retireAt:350},
   "Adios Pro 4": {brand:"Adidas", miles:57.2, category:"race", watchAt:125, retireAt:200},
   "VaporFly 3": {brand:"Nike", miles:103.6, category:"race", watchAt:125, retireAt:200},
   "Alpha Fly 3 Bright Crimson": {brand:"Nike", miles:48.9, category:"race", watchAt:125, retireAt:200}
@@ -768,6 +795,23 @@ document.querySelectorAll(".ptab").forEach(t=>t.addEventListener("click",()=>{
   t.setAttribute("aria-selected","true");
   document.querySelectorAll(".ppanel").forEach(p=>p.style.display=p.dataset.pp===t.dataset.p?"block":"none");
 }));
+
+(function(){
+  const btn=document.getElementById("themeToggle");
+  function sync(){
+    const isDark=document.documentElement.getAttribute("data-theme")==="dark";
+    btn.textContent=isDark?"☀️":"🌙";
+    btn.setAttribute("aria-label",isDark?"Switch to light mode":"Switch to dark mode");
+  }
+  btn.addEventListener("click",()=>{
+    const isDark=document.documentElement.getAttribute("data-theme")==="dark";
+    if(isDark){document.documentElement.removeAttribute("data-theme");}
+    else{document.documentElement.setAttribute("data-theme","dark");}
+    try{localStorage.setItem("theme",isDark?"light":"dark");}catch(e){}
+    sync();
+  });
+  sync();
+})();
 
 (async function(){await load();renderWeek();renderPlan();renderShoes();})();
 </script>
