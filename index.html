@@ -316,10 +316,10 @@ function parseNote(noteRaw){
   const pull=(re,cls,icon)=>{
     text=text.replace(re,m=>{tags.push({cls,icon,text:m.trim().replace(/\.$/,"")});return" ";});
   };
-  pull(/No interactive check-in available this run[^.]*\.\s*/i,"auto","⚙");
-  pull(/Shoes:\s*[^.]*\.\s*/i,"shoe","👟");
-  pull(/PF routine:\s*[^.]*\.\s*/i,"pf","🦶");
-  pull(/[A-Z][a-zA-Z']*\s+tonight\s*\([^)]*\)[^.]*\.\s*/,"game","🥎");
+  pull(/No interactive check-in available this run.*?\.(?!\d)\s*/i,"auto","⚙");
+  pull(/Shoes:\s*.*?\.(?!\d)\s*/i,"shoe","👟");
+  pull(/PF routine:\s*.*?\.(?!\d)\s*/i,"pf","🦶");
+  pull(/[A-Z][a-zA-Z']*\s+tonight\s*\([^)]*\).*?\.(?!\d)\s*/,"game","🥎");
   text=text.replace(/\s{2,}/g," ").trim();
   const lines=text?text.split(/(?<=[.!?])\s+(?=[A-Z0-9])/).map(s=>s.trim()).filter(Boolean):[];
   return{tags,lines};
@@ -394,7 +394,8 @@ const LOG = {
   "2026-08-13": {done:true, actualMi:5.01, feel:null, body:null, note:"No interactive check-in available this run (automated) — logged from Strava only. Easy + strides (5.01mi vs 5 planned, cutback week) landed on plan. Avg HR 143.2, max 159 (HR generally at/under 155 ceiling) — comfortably under overall, with HR climbing steadily lap to lap (130.6→141.3→144.7→149.3→150.1, spiking to 156 in the final seconds) while pace held essentially flat (9:13→9:01/mi) — consistent with the planned strides plus the usual warm-up-driven rise seen on other easy days, not real drift. Cadence ~87 (single-foot count). Shoes: Vomero Plus White, 249.4 mi. PF routine: not asked (no interactive check-in this run)."},
   "2026-08-14": {done:true, actualMi:4.01, feel:null, body:2, note:"Easy + strides (4.01mi vs 4 planned, cutback week) landed on plan by distance. Pace ~9:11/mi, cadence ~87 (single-foot count, ~174 spm) — genuinely easy, and max speed spiked to ~5:45/mi pace late in the run, consistent with strides. Preston confirms the HR monitor died about a half mile in — matches the data (flatlined at a pegged 145-146 with matching max after mile 1), so that reading is disregarded, not a real effort signal. Whole body felt very heavy today — Preston's read is lingering fatigue from a hectic last week to ten days (stacked softball nights, a skipped Wednesday run), not a new issue. Shoes: Vomero Plus Grey, 4.0 mi (Preston corrected the Strava gear assignment — brand new pair, first run today, not Vomero Plus Panda as originally logged). PF routine: not asked (no interactive check-in this run)."},
   "2026-08-15": {done:true, actualMi:10.02, feel:2, body:2, note:"Cutback week long run (10.02mi vs 10 planned) landed fully easy per plan. Pace held rock-flat all the way through, roughly 9:10-9:20/mi mile after mile, no fade at all. Avg HR 153.2, max 164 (HR ≤155 ceiling on a cutback long run) — HR eased up from a slow ~121 opening quarter mile to a 155-158 plateau by the midpoint and held there to the finish; mild cardiac drift (HR up, pace flat) over a 90+ minute effort, not a flag on an easy cutback day. Felt OK. Body check tight on waking — general, not heel/PF or IT band. Shoes: Vomero Plus Grey, 14.0 mi. PF routine: partial."},
-  "2026-08-18": {done:true, actualMi:5.01, feel:null, body:null, note:"No interactive check-in available this run (automated) — logged from Strava only. Easy 5 (5.01mi vs 5 planned) landed on plan. Avg HR 142.8, max 158 (HR generally at/under 155 ceiling) — comfortably under overall, with HR climbing steadily lap to lap (128→142→146→147→150) while pace held essentially flat (~9:00-9:23/mi) — same warm-up-driven pattern seen on nearly every easy day this block, not real drift. Cadence ~87 (single-foot count, ~173 spm). Shoes: Superblast 3 Black, 5.0 mi (brand new pair, first run today). Softball tonight (Dinger Daddies vs Mudville - Away, 7:45pm) — extra load on top of today's run. PF routine: not asked (no interactive check-in this run)."}
+  "2026-08-18": {done:true, actualMi:5.01, feel:null, body:null, note:"No interactive check-in available this run (automated) — logged from Strava only. Easy 5 (5.01mi vs 5 planned) landed on plan. Avg HR 142.8, max 158 (HR generally at/under 155 ceiling) — comfortably under overall, with HR climbing steadily lap to lap (128→142→146→147→150) while pace held essentially flat (~9:00-9:23/mi) — same warm-up-driven pattern seen on nearly every easy day this block, not real drift. Cadence ~87 (single-foot count, ~173 spm). Shoes: Superblast 3 Black, 5.0 mi (brand new pair, first run today). Softball tonight (Dinger Daddies vs Mudville - Away, 7:45pm) — extra load on top of today's run. PF routine: not asked (no interactive check-in this run)."},
+  "2026-08-19": {done:true, actualMi:5.01, feel:null, body:null, note:"No interactive check-in available this run (automated) — logged from Strava only. Easy buffer 5 (5.01mi vs 5 planned) landed on plan. Avg HR 139.8, max 158 (HR under 155 ceiling) — comfortably under overall, with HR climbing steadily lap to lap (123→137→144→147→149, max 158 late) while pace also picked up each mile (9:23→9:05→8:52→8:50→8:48/mi) — same warm-up-driven negative-split pattern as nearly every other easy day this block, not real drift. Cadence ~87 (single-foot count, ~174 spm). No same-day game tonight. Shoes: Superblast 3 Black, 10.0 mi. PF routine: not asked (no interactive check-in this run)."}
 };
 
 // SHOE_SUGGEST holds the recommended shoe for an upcoming (usually not-yet-logged) day, written by the
@@ -419,7 +420,7 @@ const SHOE_SUGGEST = {
   "2026-08-18": "Superblast 3 Black — 0.0 mi (brand new pair, first worn today — lowest of the 5 active easy/long pairs by a wide margin, so it takes over the rotation from Grey)",
   "2026-08-19": "Superblast 3 Black — 5.0 mi (confirmed lowest of the 5 after today's run — stays in rotation)",
   "2026-08-20": "Evo SL Blue — 21.5 mi (only active Evo SL pair)",
-  "2026-08-21": "Superblast 3 Black — 10.0 mi projected (still lowest of the 5 — stays in rotation)",
+  "2026-08-21": "Superblast 3 Black — 10.0 mi (confirmed lowest of the 5 after Wednesday's run — stays in rotation)",
   "2026-08-22": "Vomero Plus Grey — 14.0 mi (rotating in for Saturday's long run — lowest of the 5 once Superblast 3 hits 16.0 after Friday's run)",
   "2026-08-25": "Superblast 3 Black — 16.0 mi projected (lowest of the 5 again — rotating off Grey after Saturday's long run)",
   "2026-08-26": "Superblast 3 Black — 21.0 mi projected (still lowest of the 5 — stays in rotation)",
@@ -438,7 +439,7 @@ const SHOES = {
   "Vomero Plus White": {brand:"Nike", miles:249.4, category:"trainer", watchAt:275, retireAt:350},
   "Evo SL Blue": {brand:"Adidas", miles:21.5, category:"trainer", watchAt:275, retireAt:350},
   "Megablast": {brand:"ASICS", miles:283.8, category:"trainer", watchAt:275, retireAt:350},
-  "Superblast 3 Black": {brand:"ASICS", miles:5.0, category:"trainer", watchAt:275, retireAt:350},
+  "Superblast 3 Black": {brand:"ASICS", miles:10.0, category:"trainer", watchAt:275, retireAt:350},
   "Adios Pro 4": {brand:"Adidas", miles:57.2, category:"race", watchAt:125, retireAt:200},
   "VaporFly 3": {brand:"Nike", miles:103.6, category:"race", watchAt:125, retireAt:200},
   "Alpha Fly 3 Bright Crimson": {brand:"Nike", miles:48.9, category:"race", watchAt:125, retireAt:200}
